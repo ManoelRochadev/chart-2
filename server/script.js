@@ -12,10 +12,10 @@ function readData(inputPath) {
   return new Promise((resolve, reject) => {
     let total = 0;
     let database_startup_time = 0;
-    let database_startup = fs.createWriteStream('./logs/database_startup.txt');
-    let database_recovery = fs.createWriteStream('./logs/database_recovery.txt');
-    const end_time_list = fs.createWriteStream('./logs/end_time.txt');
-    const other_elements = fs.createWriteStream('./logs/other_elements.txt');
+    let database_startup = fs.createWriteStream('./temp/database_startup.txt');
+    let database_recovery = fs.createWriteStream('./temp/database_recovery.txt');
+    const end_time_list = fs.createWriteStream('./temp/end_time.txt');
+    const other_elements = fs.createWriteStream('./temp/other_elements.txt');
 
     fs.createReadStream(inputPath)
       .pipe(csv())

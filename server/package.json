@@ -7,12 +7,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node --max-old-space-size=8192 server.js",
-    "dev": "node server.js"
+    "dev": "node cpu-chart.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "canvas": "^2.11.2",
     "csv-parser": "^3.0.0",
     "express": "^4.18.2"
   }

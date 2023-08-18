@@ -2,6 +2,7 @@ import express from "express";
 import fs from 'fs';
 import csv from 'csv-parser';
 import readline from 'readline';
+import { processData } from "./cpu-chart.js";
 
 const DATABASE_STARTUP = "Database startup"
 const SHUTDOWN = "Shutdown"
@@ -142,6 +143,7 @@ app.listen(port, () => {
   http://localhost:${port}
   rota para o primeiro dataset pequeno: http://localhost:${port}/data
   rota para o segundo dataset grande: http://localhost:${port}/data2
+  rota para o gráfico de uso cpu: http://localhost:${port}/cpu
   `);
 });
 
@@ -186,3 +188,14 @@ app.get('/data2', async (req, res) => {
     res.status(500).json({ error: 'Erro ao processar os dados.' });
   }
 });
+
+app.get('/cpu', async (req, res) => {
+  try {
+    await processData('system_monitoring.csv').then((result) => {
+      res.status(200).json({ result });
+    })
+  }
+  catch (error) {
+    res.status(500).json({ error: 'Erro ao processar os dados.' });
+  }
+})

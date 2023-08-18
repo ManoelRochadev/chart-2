@@ -10,7 +10,7 @@ const CHECKPOINT = "Checkpoint"
 const CHECKPOINT_END = "Checkpoint End"
 let largestNumber = 0; // Variável para armazenar o maior número
 
-function readData(inputPath) {
+export function readData(inputPath) {
   return new Promise((resolve, reject) => {
     let total = 0;
     let database_startup_time = 0;
@@ -24,7 +24,7 @@ function readData(inputPath) {
       .on('data', (row) => {
         total++;
 
-        if (total === 2) {
+        if (total === 1) {
           // Get the database startup time from the second row
           database_startup_time = parseInt(row.startTime);
         } else if (total >= 3) {
@@ -103,7 +103,7 @@ function readData(inputPath) {
   });
 }
 
-const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecoveryFilePath, otherElementsFilePath, largestNumber) => {
+export const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecoveryFilePath, otherElementsFilePath, largestNumber) => {
   console.log(largestNumber)
   const findLargestNumber = largestNumber + 1;
 
@@ -132,16 +132,4 @@ const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecove
 
   return { x, y }
 };
-
-await readData('ir.csv')
-  .then((result) => {
-    console.log('csv lido');
-      processEndTimes('./temp/end_time.txt', './temp/database_startup.txt', './temp/database_recovery.txt', './temp/other_elements.txt', largestNumber).then((result) => {
-        console.log('processEndTimes');
-        console.log(result);
-      });
-  })
-  .catch((error) => {
-    console.error('Ocorreu um erro:', error);
-  });
 

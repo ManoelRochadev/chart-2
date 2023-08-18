@@ -138,7 +138,11 @@ const app = express();
 const port = 3333; // Porta do servidor
 
 app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
+  console.log(`Servidor rodando na porta:
+  http://localhost:${port}
+  rota para o primeiro dataset pequeno: http://localhost:${port}/data
+  rota para o segundo dataset grande: http://localhost:${port}/data2
+  `);
 });
 
 

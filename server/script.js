@@ -1,5 +1,6 @@
 import fs from 'fs';
 import csv from 'csv-parser';
+import readline from 'readline';
 
 const DATABASE_STARTUP = "Database startup"
 const SHUTDOWN = "Shutdown"
@@ -7,6 +8,7 @@ const RECOVERY = "Recovery"
 const BENCHMARK = "Benchmark"
 const CHECKPOINT = "Checkpoint"
 const CHECKPOINT_END = "Checkpoint End"
+let largestNumber = 0; // Variável para armazenar o maior número
 
 function readData(inputPath) {
   return new Promise((resolve, reject) => {
@@ -31,6 +33,9 @@ function readData(inputPath) {
             if (!isNaN(row.finishTime)) {
               const time = parseInt((parseInt(row.finishTime) - database_startup_time) / 1000000);
               end_time_list.write(time + '\n');
+              if (time > largestNumber) {
+                largestNumber = time; // Atualize o maior número se necessário
+              }
             }
           } else {
             // Process database startup, shutdown, recovery, benchmark, checkpoint, and checkpoint end
@@ -90,6 +95,7 @@ function readData(inputPath) {
         end_time_list.end();
         other_elements.end();
         console.log('CSV file successfully processed');
+        resolve();
       })
       .on('error', (error) => {
         reject(error);
@@ -97,65 +103,45 @@ function readData(inputPath) {
   });
 }
 
-readData('ir.csv')
+const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecoveryFilePath, otherElementsFilePath, largestNumber) => {
+  console.log(largestNumber)
+  const findLargestNumber = largestNumber + 1;
+
+  const x = Array.from({ length: findLargestNumber }, (_, i) => i);
+  const y = Array(x.length).fill(0);
+
+  const fileStream = fs.createReadStream(filePath);
+  const rl = readline.createInterface({
+    input: fileStream,
+    crlfDelay: Infinity,
+  });
+
+  let j = 0;
+  for await (const line of rl) {
+    const endTime = parseInt(line.trim(), 10);
+    if (!isNaN(endTime)) {
+      while (x[j] < endTime) {
+        j++;
+      }
+      if (x[j] === endTime) {
+        y[j] += 1;
+      }
+    }
+  }
+
+
+  return { x, y }
+};
+
+await readData('ir.csv')
   .then((result) => {
-    console.log('Finalizado com sucesso!');
+    console.log('csv lido');
+      processEndTimes('./temp/end_time.txt', './temp/database_startup.txt', './temp/database_recovery.txt', './temp/other_elements.txt', largestNumber).then((result) => {
+        console.log('processEndTimes');
+        console.log(result);
+      });
   })
   .catch((error) => {
     console.error('Ocorreu um erro:', error);
   });
 
-  const findLargestNumberInFile = async (filePath) => {
-    let largestNumber = 0;
-  
-    const fileStream = fs.createReadStream(filePath);
-    const rl = readline.createInterface({
-      input: fileStream,
-      crlfDelay: Infinity,
-    });
-  
-    for await (const line of rl) {
-      const endTime = parseInt(line.trim(), 10);
-      if (!isNaN(endTime) && endTime > largestNumber) {
-        largestNumber = endTime;
-      }
-    }
-  
-    return largestNumber;
-  };
-
-   const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecoveryFilePath, otherElementsFilePath) => {
-    const findLargestNumber = await findLargestNumberInFile(filePath) + 1;
-  
-    const x = Array.from({ length: findLargestNumber }, (_, i) => i);
-    const y = Array(x.length).fill(0);
-  
-    const fileStream = fs.createReadStream(filePath);
-    const rl = readline.createInterface({
-      input: fileStream,
-      crlfDelay: Infinity,
-    });
-  
-    let j = 0;
-    for await (const line of rl) {
-      const endTime = parseInt(line.trim(), 10);
-      if (!isNaN(endTime)) {
-        while (x[j] < endTime) {
-          j++;
-        }
-        if (x[j] === endTime) {
-          y[j] += 1;
-        }
-      }
-    }
-  
-    return { x, y};
-  };
-  const {x, y} = await processEndTimes(
-    './temp/end_time.txt',
-    './temp/database_startup.txt',
-    './temp/database_recovery.txt',
-    './temp/other_elements.txt'
-  );
-
-  console.log(x);

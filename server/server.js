@@ -12,10 +12,12 @@ const CHECKPOINT = "Checkpoint"
 const CHECKPOINT_END = "Checkpoint End"
 let largestNumber = 0; // Variável para armazenar o maior número
 
+// Função para ler o arquivo csv
 function readData(inputPath) {
   return new Promise((resolve, reject) => {
     let total = 0;
     let database_startup_time = 0;
+    // arquivos temporários para armazenar os dados
     let database_startup = fs.createWriteStream('./temp/database_startup.txt');
     let database_recovery = fs.createWriteStream('./temp/database_recovery.txt');
     const end_time_list = fs.createWriteStream('./temp/end_time.txt');
@@ -105,6 +107,7 @@ function readData(inputPath) {
   });
 }
 
+// Função para processar os tempos de término
 const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecoveryFilePath, otherElementsFilePath, largestNumber) => {
   console.log(largestNumber)
   const findLargestNumber = largestNumber + 1;

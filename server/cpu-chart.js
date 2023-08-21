@@ -1,6 +1,4 @@
 import fs from 'fs'
-// path = path to dataset
-// path = path to dataset
 
 export async function processData(path) {
   const data = await fs.promises.readFile(path, 'utf-8');

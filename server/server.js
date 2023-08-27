@@ -1,204 +1,102 @@
 import express from "express";
 import fs from 'fs';
 import csv from 'csv-parser';
-import readline from 'readline';
-import { processData } from "./cpu-chart.js";
+import WebSocket, { WebSocketServer } from 'ws';
 
-const DATABASE_STARTUP = "Database startup"
-const SHUTDOWN = "Shutdown"
-const RECOVERY = "Recovery"
-const BENCHMARK = "Benchmark"
-const CHECKPOINT = "Checkpoint"
-const CHECKPOINT_END = "Checkpoint End"
-let largestNumber = 0; // Variável para armazenar o maior número
+// Caminho do arquivo CSV a ser processado
+const inputPath = 'datasets.csv';
+const pathCpu = 'system_monitoring.csv'
 
-// Função para ler o arquivo csv
-function readData(inputPath) {
-  return new Promise((resolve, reject) => {
-    let total = 0;
-    let database_startup_time = 0;
-    // arquivos temporários para armazenar os dados
-    let database_startup = fs.createWriteStream('./temp/database_startup.txt');
-    let database_recovery = fs.createWriteStream('./temp/database_recovery.txt');
-    const end_time_list = fs.createWriteStream('./temp/end_time.txt');
-    const other_elements = fs.createWriteStream('./temp/other_elements.txt');
+// Variáveis de controle
+let total = 0; // Contador de linhas no CSV
+let database_startup_time = 0; // Armazena o tempo de inicialização do banco de dados
+const contagemComandos = []; // Armazena os arrays de contagem de comandos por segundo
+let arrayParaVerificarSeJaFoiEnviado = []; // Armazena os arrays para verificação de envio
 
+// Criar um servidor WebSocket
+const wss = new WebSocketServer({ port: 8080 }, () => {
+  console.log(`
+  rota para o dataset de comandos por segundo: ws://localhost:8080/data
+  rota para o dataset de uso de cpu: ws://localhost:8080/cpu
+  `);
+});
+
+// Evento quando uma conexão WebSocket é estabelecida
+wss.on('connection', async (ws, req) => {
+  console.log('Client connected');
+
+  if (req.url === '/data') {
+    // Lê e processa o arquivo CSV
     fs.createReadStream(inputPath)
       .pipe(csv())
       .on('data', (row) => {
         total++;
 
+        // Processar cada linha do CSV
         if (total === 1) {
-          // Get the database startup time from the second row
+          // Obter o tempo de inicialização do banco de dados a partir da segunda linha
           database_startup_time = parseInt(row.startTime);
         } else if (total >= 3) {
-          if (row.type !== '0') {
-            // Store the endTime of a performed command
-            if (!isNaN(row.finishTime)) {
-              const time = parseInt((parseInt(row.finishTime) - database_startup_time) / 1000000);
-              end_time_list.write(time + '\n');
-              if (time > largestNumber) {
-                largestNumber = time; // Atualize o maior número se necessário
+          if (row.type !== '0' && !isNaN(row.finishTime)) {
+            // Calcular o tempo em segundos a partir do tempo de término e do tempo de inicialização
+            const tempoTermino = parseInt(row.finishTime);
+            const tempoEmSegundos = Math.floor((tempoTermino - database_startup_time) / 1000000);
+
+            if (tempoEmSegundos >= 0) {
+              // Verificar se o array para esse segundo já existe
+              const entryIndex = contagemComandos.findIndex(entry => entry[0] === tempoEmSegundos);
+
+              if (entryIndex === -1) {
+                // Se não existe, adicionar um novo array de contagem
+                contagemComandos.push([tempoEmSegundos, 1]);
+              } else {
+                // Se existe, incrementar a contagem de comandos
+                contagemComandos[entryIndex][1]++;
               }
             }
-          } else {
-            // Process database startup, shutdown, recovery, benchmark, checkpoint, and checkpoint end
-            if (row.key === DATABASE_STARTUP) {
-              const element = [
-                'System restart',
-                parseFloat((parseInt(row.startTime) - database_startup_time) / 1000000),
-              ];
-              database_startup.write(element[1] + '\n');
-              other_elements.write(JSON.stringify(element) + '\n');
-            } else if (row.key === SHUTDOWN) {
-              const element = [
-                'System failure',
-                parseFloat((parseInt(row.startTime) - database_startup_time) / 1000000),
-              ];
-              other_elements.write(JSON.stringify(element) + '\n');
-            } else if (row.key === RECOVERY) {
-              const start_time = parseFloat((parseInt(row.startTime) - database_startup_time) / 1000000);
-              if (start_time > 0) {
-                const element = [
-                  'Recovery',
-                  start_time,
-                  parseFloat((parseInt(row.finishTime) - database_startup_time) / 1000000),
-                ];
-                database_recovery.write(element[2] + '\n');
-                other_elements.write(JSON.stringify(element) + '\n');
-              }
-            } else if (row.key === BENCHMARK) {
-              const element = [
-                'Benchmark',
-                parseFloat((parseInt(row.startTime) - database_startup_time) / 1000000),
-                parseFloat((parseInt(row.finishTime) - database_startup_time) / 1000000),
-              ];
-              other_elements.write(JSON.stringify(element) + '\n');
-            } else if (row.key === CHECKPOINT) {
-              const element = [
-                'Checkpoint',
-                row.command,
-                parseFloat((parseInt(row.startTime) - database_startup_time) / 1000000),
-                parseFloat((parseInt(row.finishTime) - database_startup_time) / 1000000),
-              ];
-              other_elements.write(JSON.stringify(element) + '\n');
-            } else if (row.key === CHECKPOINT_END) {
-              const element = [
-                'Checkpoint End',
-                row.command,
-                parseFloat((parseInt(row.finishTime) - database_startup_time) / 1000000),
-              ];
-              other_elements.write(JSON.stringify(element) + '\n');
+          }
+        }
+
+        // Verificar se o tamanho do array aumentou e enviar o penúltimo elemento apenas uma vez
+        for (let i = 0; i < contagemComandos.length; i++) {
+          if (contagemComandos.length > arrayParaVerificarSeJaFoiEnviado.length) {
+            if (i === contagemComandos.length - 2) {
+              arrayParaVerificarSeJaFoiEnviado.push(contagemComandos[i]);
+              ws.send(JSON.stringify(contagemComandos[i]));
             }
           }
         }
       })
       .on('end', () => {
-        database_startup.end();
-        database_recovery.end();
-        end_time_list.end();
-        other_elements.end();
         console.log('CSV file successfully processed');
-        resolve();
-      })
-      .on('error', (error) => {
-        reject(error);
+        // Enviar o último elemento do array para a conexão WebSocket
+        ws.send(JSON.stringify(contagemComandos[contagemComandos.length - 1]));
       });
-  });
-}
 
-// Função para processar os tempos de término
-const processEndTimes = async (filePath, databaseStartupFilePath, databaseRecoveryFilePath, otherElementsFilePath, largestNumber) => {
-  console.log(largestNumber)
-  const findLargestNumber = largestNumber + 1;
+  } else if (req.url === '/cpu') {
+    const data = await fs.promises.readFile(pathCpu, 'utf-8');
+    const lines = data.trim().split('\n');
 
-  const x = Array.from({ length: findLargestNumber }, (_, i) => i);
-  const y = Array(x.length).fill(0);
+    // Gets the database start up time
+    const databaseStartupLine = lines[1].split(';');
+    const databaseStartupTime = parseInt(databaseStartupLine[2]);
 
-  const fileStream = fs.createReadStream(filePath);
-  const rl = readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
+    lines.splice(0, 2); // Remove header and database startup information
 
-  let j = 0;
-  for await (const line of rl) {
-    const endTime = parseInt(line.trim(), 10);
-    if (!isNaN(endTime)) {
-      while (x[j] < endTime) {
-        j++;
-      }
-      if (x[j] === endTime) {
-        y[j] += 1;
+    const x = [];
+    const y = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const linha = lines[i].split(';');
+      if (linha[0].match(/^\d+$/)) {
+        const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
+        x.push(num);
+        y.push(parseFloat(linha[1].replace(',', '.')));
+
+        ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
       }
     }
-  }
-
-
-  return { x, y }
-};
-
-const app = express();
-const port = 3333; // Porta do servidor
-
-app.listen(port, () => {
-  console.log(`Servidor rodando na porta:
-  http://localhost:${port}
-  rota para o primeiro dataset pequeno: http://localhost:${port}/data
-  rota para o segundo dataset grande: http://localhost:${port}/data2
-  rota para o gráfico de uso cpu: http://localhost:${port}/cpu
-  `);
-});
-
-
-// rota para o primeiro dataset
-app.get('/data', async (req, res) => {
-  try {
-    await readData('datasets.csv')
-  .then((result) => {
-    console.log('csv lido');
-      processEndTimes('./temp/end_time.txt', './temp/database_startup.txt', './temp/database_recovery.txt', './temp/other_elements.txt', largestNumber).then((result) => {
-        console.log('processEndTimes executado');
-        res.status(200).json({ result });
-      });
-  })
-  .catch((error) => {
-    console.error('Ocorreu um erro:', error);
-  });
-
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao processar os dados.' });
+  } else {
+    ws.send('Invalid URL');
   }
 });
-
-
-// rota para o segundo dataset
-app.get('/data2', async (req, res) => {
-  try {
-    await readData('ir.csv')
-  .then((result) => {
-    console.log('csv lido');
-      processEndTimes('./temp/end_time.txt', './temp/database_startup.txt', './temp/database_recovery.txt', './temp/other_elements.txt', largestNumber).then((result) => {
-        console.log('processEndTimes executado');
-        res.status(200).json({ result });
-      });
-  })
-  .catch((error) => {
-    console.error('Ocorreu um erro:', error);
-  });
-
-  } catch (error) {
-    res.status(500).json({ error: 'Erro ao processar os dados.' });
-  }
-});
-
-app.get('/cpu', async (req, res) => {
-  try {
-    await processData('system_monitoring.csv').then((result) => {
-      res.status(200).json({ result });
-    })
-  }
-  catch (error) {
-    res.status(500).json({ error: 'Erro ao processar os dados.' });
-  }
-})

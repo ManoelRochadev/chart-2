@@ -1,35 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import './App.css';
+import { Chart } from 'react-google-charts';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+interface CpuData {
+  timestamp: number;
+  usage: number;
 }
 
-export default App
+const App = () => {
+  const [data, setData] = useState<CpuData[]>([]);
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:8080/cpu');
+
+    ws.onmessage = (event) => {
+      try {
+        const message = JSON.parse(event.data);
+        setData((prevData) => [...prevData, message]);
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
+    };
+
+    ws.onclose = () => {
+      console.log('Connection closed');
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
+  if (data.length === 0) {
+    return <div>Loading...</div>;
+  }
+
+  const chartData = [['Timestamp', 'CPU Usage'], ...data];
+
+  const chartOptions = {
+   chart: {
+    title: 'CPU Usage',
+    subtitle: 'in %',
+   },
+    hAxis: {
+      title: 'Time',
+    },
+    vAxis: {
+      title: 'CPU Usage',
+      viewWindow: {
+        min: 0,
+        max: 100,
+      }
+    }
+  };
+
+  return (
+    <div className="chart-container">
+      <Chart chartType="LineChart" options={chartOptions}  data={chartData} width="800px" height="500px" legendToggle />
+    </div>
+  );
+};
+
+export default App;

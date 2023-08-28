@@ -2,7 +2,16 @@ import express from "express";
 import fs from 'fs';
 import csv from 'csv-parser';
 import WebSocket, { WebSocketServer } from 'ws';
+import cors from 'cors';
 
+
+const app = express();
+app.use(cors());
+const port = 8080;
+
+const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
 // Caminho do arquivo CSV a ser processado
 const inputPath = 'datasets.csv';
 const pathCpu = 'system_monitoring.csv'
@@ -14,7 +23,7 @@ const contagemComandos = []; // Armazena os arrays de contagem de comandos por s
 let arrayParaVerificarSeJaFoiEnviado = []; // Armazena os arrays para verificação de envio
 
 // Criar um servidor WebSocket
-const wss = new WebSocketServer({ port: 8080 }, () => {
+const wss = new WebSocketServer({ server }, () => {
   console.log(`
   rota para o dataset de comandos por segundo: ws://localhost:8080/data
   rota para o dataset de uso de cpu: ws://localhost:8080/cpu
@@ -73,7 +82,8 @@ wss.on('connection', async (ws, req) => {
         ws.send(JSON.stringify(contagemComandos[contagemComandos.length - 1]));
       });
 
-  } else if (req.url === '/cpu') {
+  }
+  if (req.url === '/cpu') {
     const data = await fs.promises.readFile(pathCpu, 'utf-8');
     const lines = data.trim().split('\n');
 

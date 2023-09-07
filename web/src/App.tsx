@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './App.css';
+// import './App.css';
 import { Chart } from 'react-google-charts';
 
 interface CpuData {
@@ -56,7 +56,7 @@ const App = () => {
 
   return (
     <div className="chart-container">
-      <Chart chartType="LineChart" options={chartOptions}  data={chartData} width="800px" height="500px" legendToggle />
+      <Chart chartType="LineChart" options={chartOptions}  data={chartData} legendToggle />
     </div>
   );
 };

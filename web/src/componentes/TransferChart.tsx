@@ -5,7 +5,8 @@ interface TransitionData {
     timestamp: number;
     transitions: number;
 }
-const Teste = () => {
+
+const TransferChart = () => {
     const [info, setInfo] = useState<TransitionData[]>([]);
   
     useEffect(() => {
@@ -47,7 +48,7 @@ const Teste = () => {
         title: 'Transitions',
         viewWindow: {
           min: 0,
-          max: 1000,
+          max: 20000,
         }
       }
     };
@@ -59,5 +60,5 @@ const Teste = () => {
     );
   };
   
-export default Teste;
+export default TransferChart;
   

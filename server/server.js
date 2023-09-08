@@ -7,6 +7,7 @@ import cors from 'cors';
 
 const app = express();
 app.use(cors());
+
 const port = 8080;
 
 const server = app.listen(port, () => {
@@ -30,57 +31,70 @@ const wss = new WebSocketServer({ server }, () => {
   `);
 });
 
-// Evento quando uma conexão WebSocket é estabelecida
+
+const processaCSV = async (ws, inputPath) => {
+  // usar promessas para ler o arquivo CSV 
+
+const process = fs.createReadStream(inputPath )
+.pipe(csv())
+.on('data', (row) => {
+  total++;
+
+  // Processar cada linha do CSV
+  if (total === 1) {
+    // Obter o tempo de inicialização do banco de dados a partir da segunda linha
+    database_startup_time = parseInt(row.startTime);
+  } else if (total >= 3) {
+    if (row.type !== '0' && !isNaN(row.finishTime)) {
+      // Calcular o tempo em segundos a partir do tempo de término e do tempo de inicialização
+      const tempoTermino = parseInt(row.finishTime);
+      const tempoEmSegundos = Math.floor((tempoTermino - database_startup_time) / 1000000);
+
+      if (tempoEmSegundos >= 0) {
+        // Verificar se o array para esse segundo já existe
+        const entryIndex = contagemComandos.findIndex(entry => entry[0] === tempoEmSegundos);
+
+        if (entryIndex === -1) {
+          // Se não existe, adicionar um novo array de contagem
+          contagemComandos.push([tempoEmSegundos, 1]);
+        } else {
+          // Se existe, incrementar a contagem de comandos
+          contagemComandos[entryIndex][1]++;
+        }
+      }
+    }
+  }
+
+  // Verificar se o tamanho do array aumentou e enviar o penúltimo elemento apenas uma vez
+  for (let i = 0; i < contagemComandos.length; i++) {
+    if (contagemComandos.length > arrayParaVerificarSeJaFoiEnviado.length) {
+      if (i === contagemComandos.length - 2) {
+        arrayParaVerificarSeJaFoiEnviado.push(contagemComandos[i]);
+        ws.send(JSON.stringify(contagemComandos[i]));
+      }
+    }
+  }
+})
+.on('end', () => {
+  console.log('CSV file successfully processed');
+  // Enviar o último elemento do array para a conexão WebSocket
+  ws.send(JSON.stringify(contagemComandos[contagemComandos.length - 1]));
+  // fechar o stream de leitura do arquivo
+});
+}
+
 wss.on('connection', async (ws, req) => {
   console.log('Client connected');
 
   if (req.url === '/data') {
-    // Lê e processa o arquivo CSV
-    fs.createReadStream(inputPath)
-      .pipe(csv())
-      .on('data', (row) => {
-        total++;
-
-        // Processar cada linha do CSV
-        if (total === 1) {
-          // Obter o tempo de inicialização do banco de dados a partir da segunda linha
-          database_startup_time = parseInt(row.startTime);
-        } else if (total >= 3) {
-          if (row.type !== '0' && !isNaN(row.finishTime)) {
-            // Calcular o tempo em segundos a partir do tempo de término e do tempo de inicialização
-            const tempoTermino = parseInt(row.finishTime);
-            const tempoEmSegundos = Math.floor((tempoTermino - database_startup_time) / 1000000);
-
-            if (tempoEmSegundos >= 0) {
-              // Verificar se o array para esse segundo já existe
-              const entryIndex = contagemComandos.findIndex(entry => entry[0] === tempoEmSegundos);
-
-              if (entryIndex === -1) {
-                // Se não existe, adicionar um novo array de contagem
-                contagemComandos.push([tempoEmSegundos, 1]);
-              } else {
-                // Se existe, incrementar a contagem de comandos
-                contagemComandos[entryIndex][1]++;
-              }
-            }
-          }
-        }
-
-        // Verificar se o tamanho do array aumentou e enviar o penúltimo elemento apenas uma vez
-        for (let i = 0; i < contagemComandos.length; i++) {
-          if (contagemComandos.length > arrayParaVerificarSeJaFoiEnviado.length) {
-            if (i === contagemComandos.length - 2) {
-              arrayParaVerificarSeJaFoiEnviado.push(contagemComandos[i]);
-              ws.send(JSON.stringify(contagemComandos[i]));
-            }
-          }
-        }
-      })
-      .on('end', () => {
-        console.log('CSV file successfully processed');
-        // Enviar o último elemento do array para a conexão WebSocket
-        ws.send(JSON.stringify(contagemComandos[contagemComandos.length - 1]));
-      });
+    // verificar se o arquivo já foi processado
+    if (contagemComandos.length === 0) {
+      await processaCSV(ws, inputPath);
+    } else {
+      for (let i = 0; i < contagemComandos.length; i++) {
+        ws.send(JSON.stringify(contagemComandos[i]));
+      }
+    }
 
   }
   if (req.url === '/cpu') {

@@ -21,7 +21,7 @@ const server = app.listen(port, () => {
 });
 // Caminho do arquivo CSV a ser processado
 const inputPath = path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
-const pathCpu = 'system_monitoring.csv'
+const pathCpu = path.join(__dirname, 'system_monitoring.csv');
 
 // Variáveis de controle
 let total = 0; // Contador de linhas no CSV
@@ -210,6 +210,36 @@ wss.on('connection', async (ws, req) => {
         console.log('Encerrando o servidor Redis...');
         child.kill(); // Encerre o processo do servidor Redis
       }
+    });
+
+    // se o usuário fechar a conexão, encerre o processo do servidor Redis
+    ws.on('close', () => {
+      child.kill();
+    });
+  }
+  // rota para parar o servidor redis
+  if (req.url === '/stop') {
+    const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
+
+    // Navegue até a pasta onde o redis-server está localizado
+    process.chdir(redisServerPath);
+
+    const child = child_process.spawn('./redis-cli', ['shutdown']);
+
+    child.on('error', (err) => {
+      console.error(`Erro ao iniciar o servidor Redis: ${err}`);
+    });
+
+    child.on('exit', (code, signal) => {
+      console.log(`Servidor Redis encerrado com código ${code} e sinal ${signal}`);
+      ws.send('Redis server stopped');
+      ws.close();
+    });
+
+    child.stdout.on('data', (data) => {
+      ws.send('Redis server stopped');
+      const output = data.toString();
+      console.log(output);
     });
 
     // se o usuário fechar a conexão, encerre o processo do servidor Redis

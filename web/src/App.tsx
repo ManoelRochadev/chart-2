@@ -1,63 +1,51 @@
-import { useEffect, useState } from 'react';
-import './App.css';
-import { Chart } from 'react-google-charts';
+import { useState } from "react";
+//import CpuChart from "./componentes/CpuChart";
+import TransferChart from "./componentes/TransferChart";
 
-interface CpuData {
-  timestamp: number;
-  usage: number;
-}
 
 const App = () => {
-  const [data, setData] = useState<CpuData[]>([]);
 
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8080/cpu');
+  const [generateArquive, setGenerateArquive] = useState<boolean>(false);
+  const [loadingServer, setLoadingServer] = useState<boolean>(false);
+
+  const initializeServer = () => {
+    console.log("Iniciando servidor");
+    setLoadingServer(true);
+    const ws = new WebSocket('ws://localhost:8080/start');
 
     ws.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        setData((prevData) => [...prevData, message]);
-      } catch (error) {
-        console.error('Error parsing WebSocket message:', error);
+      console.log(event.data);
+      if (event.data === "Generating information database commands") {
+        console.log("Server started");
+        setLoadingServer(false);
+        setGenerateArquive(true);
       }
     };
-
-    ws.onclose = () => {
-      console.log('Connection closed');
-    };
-
-    return () => {
-      ws.close();
-    };
-  }, []);
-
-  if (data.length === 0) {
-    return <div>Loading...</div>;
-  }
-
-  const chartData = [['Timestamp', 'CPU Usage'], ...data];
-
-  const chartOptions = {
-   chart: {
-    title: 'CPU Usage',
-    subtitle: 'in %',
-   },
-    hAxis: {
-      title: 'Time',
-    },
-    vAxis: {
-      title: 'CPU Usage',
-      viewWindow: {
-        min: 0,
-        max: 100,
-      }
-    }
   };
 
-  return (
-    <div className="chart-container">
-      <Chart chartType="LineChart" options={chartOptions}  data={chartData} width="800px" height="500px" legendToggle />
+  if (loadingServer) {
+    return <div className="container">
+      <div className="button-container">
+        <button disabled>Iniciar servidor</button>
+      </div>
+      <div className="loading-container">
+        <div className="loading"></div>
+      </div>
     </div>
+  }
+
+  return (
+    <div className="container">
+      {
+        !generateArquive && <div className="button-container">
+          <button onClick={initializeServer}>Iniciar servidor</button>
+        </div>
+      }
+      {generateArquive && <div>
+        <TransferChart />
+      </div>}
+    </div>
+
   );
 };
 

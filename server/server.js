@@ -21,7 +21,7 @@ const server = app.listen(port, () => {
 });
 // Caminho do arquivo CSV a ser processado
 const inputPath = path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
-const pathCpu = path.join(__dirname, 'system_monitoring.csv');
+const pathCpu = path.join(__dirname, '../../MM-DIRECT/src/system_monitoring/system_monitoring.csv');
 
 // Variáveis de controle
 let total = 0; // Contador de linhas no CSV
@@ -29,6 +29,9 @@ let database_startup_time = 0; // Armazena o tempo de inicialização do banco d
 const contagemComandos = []; // Armazena os arrays de contagem de comandos por segundo
 let arrayParaVerificarSeJaFoiEnviado = []; // Armazena os arrays para verificação de envio
 let lendoArquivo = false; // Variável de controle para verificar se o arquivo está sendo lido
+const x = [];
+const y = [];
+let databaseStartupCpu = 0;
 
 // Criar um servidor WebSocket
 const wss = new WebSocketServer({ server }, () => {
@@ -91,6 +94,30 @@ const processaCSV = async (ws, inputPath) => {
     });
 }
 
+const processaCpu = async (ws, pathCpu) => {
+  const data = await fs.promises.readFile(pathCpu, 'utf-8');
+  const lines = data.trim().split('\n');
+
+  // Gets the database start up time
+  const databaseStartupLine = lines[1].split(';');
+  const databaseStartupTime = parseInt(databaseStartupLine[2]);
+
+  databaseStartupCpu = databaseStartupTime;
+
+  lines.splice(0, 2); // Remove header and database startup information
+
+  for (let i = 0; i < lines.length; i++) {
+    const linha = lines[i].split(';');
+    if (linha[0].match(/^\d+$/)) {
+      const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
+      x.push(num);
+      y.push(parseFloat(linha[1].replace(',', '.')));
+
+      ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+    }
+  }
+}
+
 wss.on('connection', async (ws, req) => {
   console.log('Client connected');
 
@@ -144,28 +171,32 @@ wss.on('connection', async (ws, req) => {
     });
   }
   if (req.url === '/cpu') {
-    const data = await fs.promises.readFile(pathCpu, 'utf-8');
-    const lines = data.trim().split('\n');
+    const tail = new Tail(pathCpu);
 
-    // Gets the database start up time
-    const databaseStartupLine = lines[1].split(';');
-    const databaseStartupTime = parseInt(databaseStartupLine[2]);
+    await processaCpu(ws, pathCpu);
 
-    lines.splice(0, 2); // Remove header and database startup information
+    tail.on("line", function (data) {
+      const lines = data.split(';')
 
-    const x = [];
-    const y = [];
+      const endTime = parseInt(lines[0]);
 
-    for (let i = 0; i < lines.length; i++) {
-      const linha = lines[i].split(';');
-      if (linha[0].match(/^\d+$/)) {
-        const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
+      if (lines[0].match(/^\d+$/)) {
+        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
         x.push(num);
-        y.push(parseFloat(linha[1].replace(',', '.')));
+        y.push(parseFloat(lines[1].replace(',', '.')));
 
-        ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+        ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
       }
-    }
+    });
+
+
+    ws.on('close', () => {
+      tail.unwatch();
+      // limpar os arrays
+      x.length = 0;
+      y.length = 0;
+    });
+
   }
   // rotar para iniciar o servidor redis
   if (req.url === '/start') {

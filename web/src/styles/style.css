@@ -42,3 +42,7 @@ body {
 .form-controler-panel {
     padding:  20px 20px 20px 20px;
 }
+
+.card-header {
+    background: #2737be;
+}

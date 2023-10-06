@@ -1,6 +1,8 @@
 import { useState } from "react";
 //import CpuChart from "./componentes/CpuChart";
 import TransferChart from "./componentes/TransferChart";
+import MyForm from "./componentes/FormController";
+
 
 
 const App = () => {
@@ -38,7 +40,8 @@ const App = () => {
     <div>
       {
         !generateArquive && <div className="button-container">
-          <button onClick={initializeServer} className="btn btn-primary">Iniciar servidor</button>
+          {/* <button onClick={initializeServer} className="btn btn-primary">Iniciar servidor</button> */}
+          <MyForm func={initializeServer}/>
         </div>
       }
       {generateArquive && <div>

@@ -35,17 +35,17 @@ const App = () => {
   }
 
   return (
-    <div className="container">
+    <div>
       {
         !generateArquive && <div className="button-container">
-          <button onClick={initializeServer}>Iniciar servidor</button>
+          <button onClick={initializeServer} className="btn btn-primary">Iniciar servidor</button>
         </div>
       }
       {generateArquive && <div>
         <TransferChart />
       </div>}
     </div>
-
+  
   );
 };
 

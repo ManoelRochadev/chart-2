@@ -59,76 +59,35 @@
 
   <div class="container">
     <div class="card">
-
-      <div class="card-header text-light h1">
-        Protótipo
-      </div>
-
+      <h3 class="card-header text-light">Titulo</h3>
       <div class="card-body">
-
-        <div class="container">
-
+        <div class="container-fluid">
           <div class="row">
-            <div class="col-5">
-
-              <div class="row">
-                <div class="col">
-
-                  <div class="form">
-
-                    <div class="row">
-                      <div class="col">
-
-                        <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" id="graph-menu-checkbox-transf">
-                          <label class="form-check-label" for="graph-menu-checkbox-transf">
-                            Transferências
-                          </label>
-                        </div>
-
-                      </div>
-                    </div>
-
-                    <div class="row">
-                      <div class="col">
-
-                        <div class="form-check form-switch">
-                          <input class="form-check-input" type="checkbox" role="switch" id="graph-menu-checkbox-cpu">
-                          <label class="form-check-label" for="graph-menu-checkbox-cpu">
-                            CPU
-                          </label>
-                        </div>
-
-                      </div>
-                    </div>
-
-                  </div>
-
+            <div class="col painel">
+              <form>
+                <div class="mb-3">
+                  <input type="checkbox" class="form-check-input">
+                  <label for="exampleInputEmail1" class="form-label">USO DE CPU</label>
                 </div>
-
-                <div class="col-1 align-self-end root">
-
-                  <!-- <div class="btn btn-primary">
-                    iniciar
-                  </div> -->
+                <div class="mb-3">
+                  <input type="checkbox" class="form-check-input">
+                  <label for="exampleInputEmail1" class="form-label">TRANSAÇÕES</label>
                 </div>
-
-              </div>
+               <!-- <div class="row justify-content-end"> -->
+                
+                 <button type="submit" class="btn btn-primary justify-content-end">Submit</button>
+               <!-- </div> -->
+              </form>
             </div>
-
-            <div class="col-7">
-              <div class='graph' id="root"></div>
-              <script type="module" src="/src/main.tsx"></script>
-            </div>
-
+            <div class="col chart"></div>
           </div>
         </div>
-
       </div>
-
     </div>
   </div>
 
+  <script type="module" src="/src/main.tsx"></script>
+  <!-- <div class='graph' id="root"></div> -->
 </body>
 
 </html>

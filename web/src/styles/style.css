@@ -1,6 +1,9 @@
 body {
     background-color: rgb(220, 220, 255);
 }
+#root {
+ padding: 0 0 0 ;
+}
 .navbar-brand {
     font-size: 24px;
     color: aliceblue;

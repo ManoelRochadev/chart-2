@@ -1,24 +1,34 @@
 import StartButton from "./StartButton";
 
-const MyForm = ({func:any}) => {
+interface FormProp {
+    initServer: () => void;
+}
+
+const FormController = ({ initServer }: FormProp) => {
     function handleSubmit(e: any) {
-        // Prevent the browser from reloading the page
         e.preventDefault();
 
-        // Read the form data
         const form = e.target;
         const formData = new FormData(form);
 
-        // You can pass formData as a fetch body directly:
         fetch('/some-api', { method: form.method, body: formData });
 
-        // Or you can work with it as a plain object:
         const formJson = Object.fromEntries(formData.entries());
         console.log(formJson);
     }
 
     return (
         <form method="post" onSubmit={handleSubmit}>
+            <p>
+                GRAFICOS: <br />
+                <label className="me-3">
+                    <input type="checkbox" name="graph-1" /> CPU
+                </label>
+                <label className="me-3">
+                    <input type="checkbox" name="graph-2" /> TRANSIÇÕES
+                </label>
+            </p>
+            <hr />
             <div className="col-3">
                 <select className="form-select" name="drop">
                     <option selected>PARÂMETROS</option>
@@ -28,29 +38,26 @@ const MyForm = ({func:any}) => {
                 </select>
             </div>
             <hr />
-            <p>
-                GRAFICOS: <br />
-            <label className="me-3">
-                <input type="checkbox" name="graph-1" /> CPU
-            </label>
-            <label className="me-3">
-                <input type="checkbox" name="graph-2" /> TRANSIÇÕES
-            </label>
-            </p>
+
+            <div className="col-4">
+                <label htmlFor="customRange2" className="form-label">Range</label>
+                <input type="range" className="form-range" min="0" max="5" id="customRange2" />
+
+            </div>
+
             <hr />
-                <div className="col-auto">
-                    <input className="form-check-input" type="checkbox" name="check-1"  />
-                    <label className="form-check-label me-3"> Option 1 </label>
-                    <input className="form-check-input" type="checkbox" name="check-2"  />
-                    <label className="form-check-label me-3"> Option 2 </label>
-                    <input className="form-check-input" type="checkbox" name="check-3"  />
-                    <label className="form-check-label me-3"> Option 3 </label>
-                </div>
+            <div className="col-auto">
+                <input className="form-check-input" type="checkbox" name="check-1" />
+                <label className="form-check-label me-3"> Opção 1 </label>
+                <input className="form-check-input" type="checkbox" name="check-2" />
+                <label className="form-check-label me-3"> Opção 2 </label>
+                <input className="form-check-input" type="checkbox" name="check-3" />
+                <label className="form-check-label me-3"> Opção 3 </label>
+            </div>
             <hr />
-            <button className="btn btn-primary me-3" type="reset">Reset form</button>
-            <button onClick={func} className="btn btn-success me-3">Submit form</button>
-            {/* <StartButton onClick={func} /> */}
+            <button className="btn btn-primary me-3" type="reset">Reset</button>
+            <button onClick={initServer} className="btn btn-success me-3">Start</button>
         </form>
     );
 }
-export default MyForm;
+export default FormController;

@@ -1,6 +1,9 @@
 import { useState } from "react";
+import NavBar from "./componentes/NavBar";
 //import CpuChart from "./componentes/CpuChart";
 import TransferChart from "./componentes/TransferChart";
+import FormController from "./componentes/FormController";
+
 
 
 const App = () => {
@@ -24,27 +27,41 @@ const App = () => {
   };
 
   if (loadingServer) {
-    return <div className="container">
-      <div className="button-container">
-        <button disabled>Iniciar servidor</button>
-      </div>
-      <div className="loading-container">
-        <div className="loading"></div>
-      </div>
-    </div>
+    return (
+      <div className="div">
+        <NavBar />
+        <div className="container">
+          <div className="button-container">
+            <button disabled>Iniciar servidor</button>
+          </div>
+          <div className="loading-container">
+            <div className="loading"></div>
+          </div>
+        </div>
+      </div>)
   }
 
   return (
-    <div className="container">
+    <div>
+      <NavBar />
       {
         !generateArquive && <div className="button-container">
-          <button onClick={initializeServer}>Iniciar servidor</button>
+          <div className="container">
+            <div className="card">
+              <h3 className="card-header text-light">Redis-IR</h3>
+              <div className="card-body">
+                <FormController initServer={initializeServer} />
+              </div>
+            </div>
+          </div>
         </div>
       }
-      {generateArquive && <div>
-        <TransferChart />
-      </div>}
-    </div>
+      {
+        generateArquive && <div>
+          <TransferChart />
+        </div>
+      }
+    </div >
 
   );
 };

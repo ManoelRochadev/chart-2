@@ -1,6 +1,9 @@
 body {
     background-color: rgb(220, 220, 255);
 }
+#root {
+ padding: 0 0 0 ;
+}
 .navbar-brand {
     font-size: 24px;
     color: aliceblue;
@@ -31,9 +34,18 @@ body {
     background-color:cornflowerblue;
     margin-top: 20px;
     padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .graph {
-    margin-top: 10px;
-    margin-bottom: 30px;
+    padding-top: 10px;
+    padding-bottom: 30px;
+}
+
+.form-controler-panel {
+    padding:  20px 20px 20px 20px;
+}
+
+.card-header {
+    background: #2737be;
 }

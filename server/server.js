@@ -98,22 +98,26 @@ const processaCpu = async (ws, pathCpu) => {
   const data = await fs.promises.readFile(pathCpu, 'utf-8');
   const lines = data.trim().split('\n');
 
-  // Gets the database start up time
-  const databaseStartupLine = lines[1].split(';');
-  const databaseStartupTime = parseInt(databaseStartupLine[2]);
-
-  databaseStartupCpu = databaseStartupTime;
-
-  lines.splice(0, 2); // Remove header and database startup information
-
-  for (let i = 0; i < lines.length; i++) {
-    const linha = lines[i].split(';');
-    if (linha[0].match(/^\d+$/)) {
-      const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
-      x.push(num);
-      y.push(parseFloat(linha[1].replace(',', '.')));
-
-      ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+  // verificar se o arquivo está vazio
+  if (lines.length >= 2) {
+    // Gets the database start up time
+    console.log(lines)
+    const databaseStartupLine = lines[1].split(';');
+    const databaseStartupTime = parseInt(databaseStartupLine[2]);
+  
+    databaseStartupCpu = databaseStartupTime;
+  
+    lines.splice(0, 2); // Remove header and database startup information
+  
+    for (let i = 0; i < lines.length; i++) {
+      const linha = lines[i].split(';');
+      if (linha[0].match(/^\d+$/)) {
+        const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
+        x.push(num);
+        y.push(parseFloat(linha[1].replace(',', '.')));
+  
+        ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+      }
     }
   }
 }
@@ -176,16 +180,16 @@ wss.on('connection', async (ws, req) => {
     await processaCpu(ws, pathCpu);
 
     tail.on("line", function (data) {
-      const lines = data.split(';')
+        const lines = data.split(';')
 
-      const endTime = parseInt(lines[0]);
+        const endTime = parseInt(lines[0]);
 
-      if (lines[0].match(/^\d+$/)) {
-        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
-        x.push(num);
-        y.push(parseFloat(lines[1].replace(',', '.')));
+        if (lines[0].match(/^\d+$/)) {
+          const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
+          x.push(num);
+          y.push(parseFloat(lines[1].replace(',', '.')));
 
-        ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
+          ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
       }
     });
 
@@ -232,10 +236,16 @@ wss.on('connection', async (ws, req) => {
       const regex = /Memtier benchmark execution finished: \d+\.\d+ seconds\./;
       // verificar se está gerando "Generating information about executed database commands ..."
       const regex2 = /Generating information about executed database commands .../;
+      const regex3 = /Generating system monitoring .../;
 
       if (regex2.test(output)) {
         console.log('Gerando informações sobre os comandos do banco de dados executados ...');
         ws.send('Generating information database commands');
+      }
+
+      if (regex3.test(output)) {
+        console.log('Gerando monitoramento do sistema ...');
+        ws.send('Generating system monitoring');
       }
       if (regex.test(output)) {
         console.log('Encerrando o servidor Redis...');

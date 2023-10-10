@@ -57,7 +57,7 @@ const CpuChart = () => {
     <div className="container chart-container chart-container-cpu">
       <div className="row justify-content-center text-center">
         <div className="col-10">
-          <h2>gráfico CPU</h2>
+          <h2>Uso de CPU</h2>
           <Chart chartType="LineChart" options={chartOptions} data={chartData} legendToggle />
         </div>
       </div>

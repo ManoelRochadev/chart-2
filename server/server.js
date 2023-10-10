@@ -98,10 +98,6 @@ const processaCpu = async (ws, pathCpu) => {
   const data = await fs.promises.readFile(pathCpu, 'utf-8');
   const lines = data.trim().split('\n');
 
-  // verificar se o arquivo está vazio
-  if (lines.length >= 2) {
-    // Gets the database start up time
-    console.log(lines)
     const databaseStartupLine = lines[1].split(';');
     const databaseStartupTime = parseInt(databaseStartupLine[2]);
   
@@ -119,7 +115,6 @@ const processaCpu = async (ws, pathCpu) => {
         ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
       }
     }
-  }
 }
 
 wss.on('connection', async (ws, req) => {

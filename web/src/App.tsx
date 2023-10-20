@@ -1,10 +1,7 @@
 import { useState } from "react";
 import NavBar from "./componentes/NavBar";
-//import CpuChart from "./componentes/CpuChart";
-import TransferChart from "./componentes/TransferChart";
 import FormController from "./componentes/FormController";
-import CpuChart from "./componentes/CpuChart";
-
+import ChartBoard from "./componentes/ChartBoard";
 
 
 const App = () => {
@@ -38,6 +35,10 @@ const App = () => {
     };
   };
 
+  const stopChart = () => {
+    return 0;
+}
+
   if (loadingServer) {
     return (
       <div className="div">
@@ -53,29 +54,14 @@ const App = () => {
     <div>
       <NavBar />
       {
-        !generateArquive && <div className="button-container">
-          <div className="container">
-            <div className="card">
-              <h3 className="card-header text-light">MM-DIRECT</h3>
-              <div className="card-body">
-                <FormController initServer={initializeServer} />
-              </div>
-            </div>
-          </div>
-        </div>
+        !generateArquive &&
+        <FormController initServer={initializeServer} />
       }
       {
-        generateArquive && <div>
-          <TransferChart />
-        </div>
-      }
-      {
-        generateArquiveMonitoring && <div>
-          <CpuChart />
-        </div>
+        generateArquive &&
+          <ChartBoard stopChart={stopChart} />
       }
     </div >
-
   );
 };
 

@@ -7,6 +7,7 @@ import path from "path";
 import { Tail } from "tail";
 import child_process from 'child_process';
 import { fileURLToPath } from 'url';
+import os from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,10 +19,57 @@ const port = 8080;
 
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
+  console.log(__dirname)
 });
+
+const serverhttp = express();
+
+const porthttp = 8081;
+
+const server2 = serverhttp.listen(porthttp, () => {
+  console.log(`rota http para os diretórios listar os diretórios: http://localhost:${porthttp}/list-directories`);
+  console.log(`rota para enviar o local do MM-DIRECT: http://localhost:${porthttp}/select-location`)
+});
+
+let rootPath = null; // Caminho do arquivo CSV a ser processado
+
+serverhttp.post('/select-location', express.json(), (req, res) => {
+  const { location } = req.body; // Assume que o cliente irá enviar o local do MM-DIRECT no corpo da requisição
+  console.log(location);
+  // Verifica se o local é válido e inclue o nome do diretório do MM-DIRECT
+  if (location !== "MM-DIRECT") {
+    res.status(400).send('Local inválido. Certifique-se de que o diretório do MM-DIRECT está incluído.');
+  }
+  const directoryPath = os.homedir() + location;
+  if (directoryPath) {
+    // Atualiza o caminho do arquivo CSV a ser processado
+    rootPath = location;
+    res.status(200).send('Local válido.');
+  } else {
+    res.status(400).send('Local inválido. Certifique-se de que o arquivo/diretório existe.');
+  }
+});
+
+serverhttp.get('/list-directories', (req, res) => {
+  // listar os diretórios a patir do caminho do usuário
+  const { location } = req.query;
+
+  const directoryPath = os.homedir() + location;
+
+  fs.readdir(directoryPath, (err, files) => {
+    if (err) {
+      return res.status(500).send('Erro ao listar os diretórios');
+    }
+    const directories = files.filter((file) => fs.statSync(path.join(directoryPath, file)).isDirectory());
+    res.json(directories);
+  });
+});
+
 // Caminho do arquivo CSV a ser processado
-const inputPath = path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
-const pathCpu = path.join(__dirname, '../../MM-DIRECT/src/system_monitoring/system_monitoring.csv');
+//path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
+const inputPath = rootPath +  "/src/datasets/datasets.csv"
+// '../../MM-DIRECT/src/system_monitoring/system_monitoring.csv'
+const pathCpu = rootPath + "/src/system_monitoring/system_monitoring.csv"
 
 // Variáveis de controle
 let total = 0; // Contador de linhas no CSV
@@ -98,24 +146,21 @@ const processaCpu = async (ws, pathCpu) => {
   const data = await fs.promises.readFile(pathCpu, 'utf-8');
   const lines = data.trim().split('\n');
 
-  // verificar se o arquivo está vazio
-  if (lines.length >= 2) {
-    // Gets the database start up time
-    console.log(lines)
+  if (lines.length > 2) {
     const databaseStartupLine = lines[1].split(';');
     const databaseStartupTime = parseInt(databaseStartupLine[2]);
-  
+
     databaseStartupCpu = databaseStartupTime;
-  
+
     lines.splice(0, 2); // Remove header and database startup information
-  
+
     for (let i = 0; i < lines.length; i++) {
       const linha = lines[i].split(';');
       if (linha[0].match(/^\d+$/)) {
         const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
         x.push(num);
         y.push(parseFloat(linha[1].replace(',', '.')));
-  
+
         ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
       }
     }
@@ -180,16 +225,16 @@ wss.on('connection', async (ws, req) => {
     await processaCpu(ws, pathCpu);
 
     tail.on("line", function (data) {
-        const lines = data.split(';')
+      const lines = data.split(';')
 
-        const endTime = parseInt(lines[0]);
+      const endTime = parseInt(lines[0]);
 
-        if (lines[0].match(/^\d+$/)) {
-          const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
-          x.push(num);
-          y.push(parseFloat(lines[1].replace(',', '.')));
+      if (lines[0].match(/^\d+$/)) {
+        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
+        x.push(num);
+        y.push(parseFloat(lines[1].replace(',', '.')));
 
-          ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
+        ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
       }
     });
 
@@ -221,12 +266,13 @@ wss.on('connection', async (ws, req) => {
       console.error(`Erro ao iniciar o servidor Redis: ${err}`);
     });
 
-    child.on('exit', (code, signal) => {
-      console.log(`Servidor Redis encerrado com código ${code} e sinal ${signal}`);
-      ws.send('Redis server stopped');
-      ws.close();
-    });
-
+    /*
+        child.on('exit', (code, signal) => {
+          console.log(`Servidor Redis encerrado com código ${code} e sinal ${signal}`);
+          ws.send('Redis server stopped');
+          ws.close();
+        });
+    */
     child.stdout.on('data', (data) => {
       ws.send('Redis server started');
       const output = data.toString();
@@ -247,10 +293,13 @@ wss.on('connection', async (ws, req) => {
         console.log('Gerando monitoramento do sistema ...');
         ws.send('Generating system monitoring');
       }
+
+      /*
       if (regex.test(output)) {
         console.log('Encerrando o servidor Redis...');
         child.kill(); // Encerre o processo do servidor Redis
       }
+      */
     });
 
     // se o usuário fechar a conexão, encerre o processo do servidor Redis

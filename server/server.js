@@ -19,9 +19,9 @@ const port = 8080;
 
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
-  console.log(__dirname)
 });
 
+/*
 const serverhttp = express();
 
 const porthttp = 8081;
@@ -30,9 +30,16 @@ const server2 = serverhttp.listen(porthttp, () => {
   console.log(`rota http para os diretórios listar os diretórios: http://localhost:${porthttp}/list-directories`);
   console.log(`rota para enviar o local do MM-DIRECT: http://localhost:${porthttp}/select-location`)
 });
-
+*/
 let rootPath = null; // Caminho do arquivo CSV a ser processado
+// ler arquivo json config.json
+const config = await JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
 
+rootPath = config.path;
+
+console.log(`path MM-DIRECT: ${rootPath}`);
+
+/*
 serverhttp.post('/select-location', express.json(), (req, res) => {
   const { location } = req.body; // Assume que o cliente irá enviar o local do MM-DIRECT no corpo da requisição
   console.log(location);
@@ -64,10 +71,11 @@ serverhttp.get('/list-directories', (req, res) => {
     res.json(directories);
   });
 });
+*/
 
 // Caminho do arquivo CSV a ser processado
 //path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
-const inputPath = rootPath +  "/src/datasets/datasets.csv"
+const inputPath = rootPath + "/src/datasets/datasets.csv"
 // '../../MM-DIRECT/src/system_monitoring/system_monitoring.csv'
 const pathCpu = rootPath + "/src/system_monitoring/system_monitoring.csv"
 

@@ -1,0 +1,373 @@
+import express from "express";
+import fs from 'fs';
+import csv from 'csv-parser';
+import { WebSocketServer } from 'ws';
+import cors from 'cors';
+import path from "path";
+import { Tail } from "tail";
+import child_process from 'child_process';
+import { fileURLToPath } from 'url';
+import os from 'os';
+import { dir } from "console";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(cors());
+
+const port = 8080;
+
+const server = app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+/*
+const serverhttp = express();
+
+const porthttp = 8081;
+
+const server2 = serverhttp.listen(porthttp, () => {
+  console.log(`rota http para os diretórios listar os diretórios: http://localhost:${porthttp}/list-directories`);
+  console.log(`rota para enviar o local do MM-DIRECT: http://localhost:${porthttp}/select-location`)
+});
+*/
+let rootPath = null; // Caminho do arquivo CSV a ser processado
+// ler arquivo json config.json
+const config = await JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
+
+rootPath = config.path;
+
+console.log(`path MM-DIRECT: ${rootPath}`);
+
+// start react app
+const reactApp = path.join(__dirname, './web');
+
+process.chdir(reactApp);
+
+// listar diretórios do react app
+const directories = fs.readdirSync(reactApp)
+// se existir não existir node_modules, instalar as dependências
+if (!directories.includes('node_modules')) {
+  child_process.execSync('npm install')
+}
+
+const reactProcess = child_process.spawn('npm', [ 'run', 'dev'])
+
+reactProcess.stdout.on('data', (data) => {
+  const output = data.toString();
+  console.log(output);
+});
+
+/*
+serverhttp.post('/select-location', express.json(), (req, res) => {
+  const { location } = req.body; // Assume que o cliente irá enviar o local do MM-DIRECT no corpo da requisição
+  console.log(location);
+  // Verifica se o local é válido e inclue o nome do diretório do MM-DIRECT
+  if (location !== "MM-DIRECT") {
+    res.status(400).send('Local inválido. Certifique-se de que o diretório do MM-DIRECT está incluído.');
+  }
+  const directoryPath = os.homedir() + location;
+  if (directoryPath) {
+    // Atualiza o caminho do arquivo CSV a ser processado
+    rootPath = location;
+    res.status(200).send('Local válido.');
+  } else {
+    res.status(400).send('Local inválido. Certifique-se de que o arquivo/diretório existe.');
+  }
+});
+
+serverhttp.get('/list-directories', (req, res) => {
+  // listar os diretórios a patir do caminho do usuário
+  const { location } = req.query;
+
+  const directoryPath = os.homedir() + location;
+
+  fs.readdir(directoryPath, (err, files) => {
+    if (err) {
+      return res.status(500).send('Erro ao listar os diretórios');
+    }
+    const directories = files.filter((file) => fs.statSync(path.join(directoryPath, file)).isDirectory());
+    res.json(directories);
+  });
+});
+*/
+
+// Caminho do arquivo CSV a ser processado
+//path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
+const inputPath = rootPath + "/src/datasets/datasets.csv"
+// '../../MM-DIRECT/src/system_monitoring/system_monitoring.csv'
+const pathCpu = rootPath + "/src/system_monitoring/system_monitoring.csv"
+
+// Variáveis de controle
+let total = 0; // Contador de linhas no CSV
+let database_startup_time = 0; // Armazena o tempo de inicialização do banco de dados
+const contagemComandos = []; // Armazena os arrays de contagem de comandos por segundo
+let arrayParaVerificarSeJaFoiEnviado = []; // Armazena os arrays para verificação de envio
+let lendoArquivo = false; // Variável de controle para verificar se o arquivo está sendo lido
+const x = [];
+const y = [];
+let databaseStartupCpu = 0;
+
+// Criar um servidor WebSocket
+const wss = new WebSocketServer({ server }, () => {
+  console.log(`
+  rota para o dataset de comandos por segundo: ws://localhost:8080/data
+  rota para o dataset de uso de cpu: ws://localhost:8080/cpu
+  `);
+});
+
+
+const processaCSV = async (ws, inputPath) => {
+  fs.createReadStream(inputPath, {
+    start: total,
+  })
+    .pipe(csv())
+    .on('data', (row) => {
+      total++;
+      lendoArquivo = true;
+
+      // Processar cada linha do CSV
+      if (total === 1) {
+        // Obter o tempo de inicialização do banco de dados a partir da segunda linha
+        database_startup_time = parseInt(row.startTime);
+      } else if (total >= 3) {
+        if (row.type !== '0' && !isNaN(row.finishTime)) {
+          // Calcular o tempo em segundos a partir do tempo de término e do tempo de inicialização
+          const tempoTermino = parseInt(row.finishTime);
+          const tempoEmSegundos = Math.floor((tempoTermino - database_startup_time) / 1000000);
+
+          if (tempoEmSegundos >= 0) {
+            // Verificar se o array para esse segundo já existe
+            const entryIndex = contagemComandos.findIndex(entry => entry[0] === tempoEmSegundos);
+
+            if (entryIndex === -1) {
+              // Se não existe, adicionar um novo array de contagem
+              contagemComandos.push([tempoEmSegundos, 1]);
+            } else {
+              // Se existe, incrementar a contagem de comandos
+              contagemComandos[entryIndex][1]++;
+            }
+          }
+        }
+      }
+
+      // Verificar se o tamanho do array aumentou e enviar o penúltimo elemento apenas uma vez
+      for (let i = 0; i < contagemComandos.length; i++) {
+        if (contagemComandos.length > arrayParaVerificarSeJaFoiEnviado.length) {
+          if (i === contagemComandos.length - 2) {
+            arrayParaVerificarSeJaFoiEnviado.push(contagemComandos[i]);
+            ws.send(JSON.stringify(contagemComandos[i]));
+          }
+        }
+      }
+    })
+    .on('end', () => {
+      console.log('CSV file successfully processed');
+      // Enviar o último elemento do array para a conexão WebSocket
+      // ws.send(JSON.stringify(contagemComandos[contagemComandos.length - 1]));
+      lendoArquivo = false;
+    });
+}
+
+const processaCpu = async (ws, pathCpu) => {
+  const data = await fs.promises.readFile(pathCpu, 'utf-8');
+  const lines = data.trim().split('\n');
+
+  if (lines.length > 2) {
+    const databaseStartupLine = lines[1].split(';');
+    const databaseStartupTime = parseInt(databaseStartupLine[2]);
+
+    databaseStartupCpu = databaseStartupTime;
+
+    lines.splice(0, 2); // Remove header and database startup information
+
+    for (let i = 0; i < lines.length; i++) {
+      const linha = lines[i].split(';');
+      if (linha[0].match(/^\d+$/)) {
+        const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
+        x.push(num);
+        y.push(parseFloat(linha[1].replace(',', '.')));
+
+        ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+      }
+    }
+  }
+}
+
+wss.on('connection', async (ws, req) => {
+  console.log('Client connected');
+
+  if (req.url === '/data') {
+    const tail = new Tail(inputPath);
+
+    await processaCSV(ws, inputPath);
+
+    tail.on("line", function (data) {
+      const line = data.split(',');
+
+      const endTime = parseInt(line[2]);
+      const startTime = parseInt(line[1]);
+
+      if (line[0] !== '0' && !isNaN(endTime)) {
+        // Calcular o tempo em segundos a partir do tempo de término e do tempo de inicialização
+        const tempoEmSegundos = Math.floor((endTime - database_startup_time) / 1000000);
+
+        if (tempoEmSegundos >= 0) {
+          // Verificar se o array para esse segundo já existe
+          const entryIndex = contagemComandos.findIndex(entry => entry[0] === tempoEmSegundos);
+
+          if (entryIndex === -1) {
+            // Se não existe, adicionar um novo array de contagem
+            contagemComandos.push([tempoEmSegundos, 1]);
+          } else {
+            // Se existe, incrementar a contagem de comandos
+            contagemComandos[entryIndex][1]++;
+          }
+        }
+      }
+
+      // Verificar se o tamanho do array aumentou e enviar o penúltimo elemento apenas uma vez
+      for (let i = 0; i < contagemComandos.length; i++) {
+        if (contagemComandos.length > arrayParaVerificarSeJaFoiEnviado.length) {
+          if (i === contagemComandos.length - 2) {
+            arrayParaVerificarSeJaFoiEnviado.push(contagemComandos[i]);
+            ws.send(JSON.stringify(contagemComandos[i]));
+          }
+        }
+      }
+    });
+
+    ws.on('close', () => {
+      tail.unwatch();
+      // limpar os arrays
+      contagemComandos.length = 0;
+      arrayParaVerificarSeJaFoiEnviado.length = 0;
+      total = 0;
+      database_startup_time = 0;
+    });
+  }
+  if (req.url === '/cpu') {
+    const tail = new Tail(pathCpu);
+
+    await processaCpu(ws, pathCpu);
+
+    tail.on("line", function (data) {
+      const lines = data.split(';')
+
+      const endTime = parseInt(lines[0]);
+
+      if (lines[0].match(/^\d+$/)) {
+        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
+        x.push(num);
+        y.push(parseFloat(lines[1].replace(',', '.')));
+
+        ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
+      }
+    });
+
+
+    ws.on('close', () => {
+      tail.unwatch();
+      // limpar os arrays
+      x.length = 0;
+      y.length = 0;
+    });
+
+  }
+  // rotar para iniciar o servidor redis
+  if (req.url === '/start') {
+    const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
+
+    // Navegue até a pasta onde o redis-server está localizado
+    process.chdir(redisServerPath);
+
+    // apagar o arquivo de log datasets.csv verificando se ele existe
+    const logFile = path.join(redisServerPath, 'datasets/datasets.csv');
+
+    if (fs.existsSync(logFile)) {
+      fs.unlinkSync(logFile);
+    }
+    const child = child_process.spawn('./redis-server');
+
+    child.on('error', (err) => {
+      console.error(`Erro ao iniciar o servidor Redis: ${err}`);
+    });
+
+    /*
+        child.on('exit', (code, signal) => {
+          console.log(`Servidor Redis encerrado com código ${code} e sinal ${signal}`);
+          ws.send('Redis server stopped');
+          ws.close();
+        });
+    */
+    child.stdout.on('data', (data) => {
+      ws.send('Redis server started');
+      const output = data.toString();
+      console.log(output);
+
+      // Use uma expressão regular para verificar a mensagem
+      const regex = /Memtier benchmark execution finished: \d+\.\d+ seconds\./;
+      // verificar se está gerando "Generating information about executed database commands ..."
+      const regex2 = /Generating information about executed database commands .../;
+      const regex3 = /Generating system monitoring .../;
+
+      if (regex2.test(output)) {
+        console.log('Gerando informações sobre os comandos do banco de dados executados ...');
+        ws.send('Generating information database commands');
+      }
+
+      if (regex3.test(output)) {
+        console.log('Gerando monitoramento do sistema ...');
+        ws.send('Generating system monitoring');
+      }
+
+      /*
+      if (regex.test(output)) {
+        console.log('Encerrando o servidor Redis...');
+        child.kill(); // Encerre o processo do servidor Redis
+      }
+      */
+    });
+
+    // se o usuário fechar a conexão, encerre o processo do servidor Redis
+    ws.on('close', () => {
+      child.kill();
+    });
+  }
+  // rota para parar o servidor redis
+  if (req.url === '/stop') {
+    const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
+
+    // Navegue até a pasta onde o redis-server está localizado
+    process.chdir(redisServerPath);
+
+    const child = child_process.spawn('./redis-cli', ['shutdown']);
+
+    child.on('error', (err) => {
+      console.error(`Erro ao iniciar o servidor Redis: ${err}`);
+    });
+
+    child.on('exit', (code, signal) => {
+      console.log(`Servidor Redis encerrado com código ${code} e sinal ${signal}`);
+      ws.send('Redis server stopped');
+      ws.close();
+    });
+
+    child.stdout.on('data', (data) => {
+      ws.send('Redis server stopped');
+      const output = data.toString();
+      console.log(output);
+    });
+
+    // se o usuário fechar a conexão, encerre o processo do servidor Redis
+    ws.on('close', () => {
+      child.kill();
+    });
+  }
+  else {
+    ws.send('Invalid URL');
+  }
+
+
+});

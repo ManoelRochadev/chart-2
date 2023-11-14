@@ -8,6 +8,7 @@ import { Tail } from "tail";
 import child_process from 'child_process';
 import { fileURLToPath } from 'url';
 import os from 'os';
+import { dir } from "console";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -38,6 +39,25 @@ const config = await JSON.parse(fs.readFileSync(path.join(__dirname, 'config.jso
 rootPath = config.path;
 
 console.log(`path MM-DIRECT: ${rootPath}`);
+
+// start react app
+const reactApp = path.join(__dirname, './web');
+
+process.chdir(reactApp);
+
+// listar diretórios do react app
+const directories = fs.readdirSync(reactApp)
+// se existir não existir node_modules, instalar as dependências
+if (!directories.includes('node_modules')) {
+  child_process.execSync('npm install')
+}
+
+const reactProcess = child_process.spawn('npm', [ 'run', 'dev'])
+
+reactProcess.stdout.on('data', (data) => {
+  const output = data.toString();
+  console.log(output);
+});
 
 /*
 serverhttp.post('/select-location', express.json(), (req, res) => {

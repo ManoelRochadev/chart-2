@@ -18,6 +18,25 @@ app.use(cors());
 
 const port = 8080;
 
+// start react app
+const reactApp = path.join(__dirname, './web');
+
+// listar diretórios do react app
+const directories = fs.readdirSync(reactApp)
+// se existir não existir node_modules, instalar as dependências
+if (!directories.includes('node_modules')) {
+  child_process.execSync('npm install')
+}
+
+const reactProcess = child_process.spawn('npm', [ 'run', 'dev'], {
+  cwd: reactApp,
+})
+
+reactProcess.stdout.on('data', (data) => {
+  const output = data.toString();
+  console.log(output);
+});
+
 const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });
@@ -36,28 +55,9 @@ let rootPath = null; // Caminho do arquivo CSV a ser processado
 // ler arquivo json config.json
 const config = await JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
 
-rootPath = config.path;
+rootPath = os.homedir() + config.path;
 
 console.log(`path MM-DIRECT: ${rootPath}`);
-
-// start react app
-const reactApp = path.join(__dirname, './web');
-
-process.chdir(reactApp);
-
-// listar diretórios do react app
-const directories = fs.readdirSync(reactApp)
-// se existir não existir node_modules, instalar as dependências
-if (!directories.includes('node_modules')) {
-  child_process.execSync('npm install')
-}
-
-const reactProcess = child_process.spawn('npm', [ 'run', 'dev'])
-
-reactProcess.stdout.on('data', (data) => {
-  const output = data.toString();
-  console.log(output);
-});
 
 /*
 serverhttp.post('/select-location', express.json(), (req, res) => {
@@ -277,7 +277,7 @@ wss.on('connection', async (ws, req) => {
   }
   // rotar para iniciar o servidor redis
   if (req.url === '/start') {
-    const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
+    const redisServerPath = path.join(rootPath, '/src');
 
     // Navegue até a pasta onde o redis-server está localizado
     process.chdir(redisServerPath);

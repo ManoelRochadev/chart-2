@@ -1,14 +1,28 @@
 ### Requirements
-- Node.js v16.6.0 or higher
+- Node.js v16.3.0 or higher
+- NPM v7.15.1 or higher
 
-if you don't have node.js installed, you can download it from the following link: https://nodejs.org/en/download/
+### Install Node.js and NPM on Ubuntu 18.04 or higher
 
-### Installation 
+```bash
+$ sudo apt-get update
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+$ nvm install 16.3.0
+```
+
+### Installing MM-DIRECT_monitoring
+
 ```bash
 $ git clone https://github.com/ManoelRochadev/MM-DIRECT_monitoring.git
 $ cd MM-DIRECT_monitoring
+```
+
+Install the dependencies with the following command:
+```bash
 $ npm install
 ```
+
+### Configuring MM-DIRECT_monitoring
 
 Modify the **config.json** file and select the location where the MM-DIRECT path is located from the user’s home.
 
@@ -19,6 +33,8 @@ Configuring the config.json File Open the config.json file in a text editor and 
   "path": "/MM-DIRECT"
 }
 ```
+
+### Running MM-DIRECT_monitoring
 
 Execution Start the application with the following command:
 ```bash

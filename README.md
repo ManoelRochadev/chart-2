@@ -1,7 +1,8 @@
 ### Installation 
 ```bash
 $ git clone https://github.com/ManoelRochadev/MM-DIRECT_monitoring.git
-$ cd MM-DIRECT_monitoring 
+$ cd MM-DIRECT_monitoring
+$ npm install
 ```
 
 Modify the **config.json** file and select the location where the MM-DIRECT path is located from the user’s home.

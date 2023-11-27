@@ -16,7 +16,7 @@
 
     100% {
         opacity: 1;
-        height: auto;
+        height:auto;
     }
 }
 
@@ -97,8 +97,20 @@ body {
     margin-top: 20px;
 }
 .cpu-options {
+    /* color: white; */
+    /* background-color: var(--pallet_A_color_1); */
     animation: smooth 1s;
 }
+/* .cpu-options select {
+    background-color: var(--pallet_A_color_2);
+} */
+.cpu-options option:hover {
+    background-color: var(--pallet_A_color_4);
+} 
 .transfer-options {
     animation: smooth 1s;
+}
+
+input [type="range"]:hover {
+    background-color: #000;
 }

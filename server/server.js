@@ -163,6 +163,7 @@ const processaCSV = async (ws, inputPath) => {
       }
     })
     .on('end', () => {
+      ws.send("CSV file successfully processed")
       console.log('CSV file successfully processed');
       // Enviar o último elemento do array para a conexão WebSocket
       // ws.send(JSON.stringify(contagemComandos[contagemComandos.length - 1]));
@@ -198,6 +199,18 @@ const processaCpu = async (ws, pathCpu) => {
 wss.on('connection', async (ws, req) => {
   console.log('Client connected');
 
+  // Airck testes
+  if (req.url === '/teste_start'){
+    ws.send('Generating information database commands')
+    ws.send('Generating system monitoring')
+  }
+  else if (req.url === '/teste_data'){
+    ws.send('Generating information database commands')
+  }
+  else if (req.url === '/teste_cpu'){
+    ws.send('Generating system monitoring')
+  }
+  else 
   if (req.url === '/data') {
     const tail = new Tail(inputPath);
 
@@ -247,7 +260,7 @@ wss.on('connection', async (ws, req) => {
       database_startup_time = 0;
     });
   }
-  if (req.url === '/cpu') {
+  else if (req.url === '/cpu') {
     const tail = new Tail(pathCpu);
 
     await processaCpu(ws, pathCpu);
@@ -276,7 +289,7 @@ wss.on('connection', async (ws, req) => {
 
   }
   // rotar para iniciar o servidor redis
-  if (req.url === '/start') {
+  else if (req.url === '/start') {
     const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
 
     // Navegue até a pasta onde o redis-server está localizado
@@ -336,7 +349,7 @@ wss.on('connection', async (ws, req) => {
     });
   }
   // rota para parar o servidor redis
-  if (req.url === '/stop') {
+  else if (req.url === '/stop') {
     const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
 
     // Navegue até a pasta onde o redis-server está localizado

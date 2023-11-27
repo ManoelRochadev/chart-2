@@ -64,3 +64,7 @@ body {
     align-items: center;
     height: 80vh;
 }
+
+.reload-button {
+    margin-top: 20px;
+}

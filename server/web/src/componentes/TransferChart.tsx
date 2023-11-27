@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Chart } from 'react-google-charts';
+import { useEffect, useState } from "react";
+import { Chart } from "react-google-charts";
 
 interface TransitionData {
     timestamp: number;
@@ -8,58 +8,74 @@ interface TransitionData {
 
 const TransferChart = () => {
     const [info, setInfo] = useState<TransitionData[]>([]);
-  
+
     useEffect(() => {
-      const ws = new WebSocket('ws://localhost:8080/data');
-  
-      ws.onmessage = (event) => {
-        try {
-          const message = JSON.parse(event.data);
-          setInfo((prevInfo) => [...prevInfo, message]);
-        } catch (error) {
-          console.error('Error parsing WebSocket message:', error);
-        }
-      };
-  
-      ws.onclose = () => {
-        console.log('Connection closed');
-      };
-  
-      return () => {
-        ws.close();
-      };
+        const ws = new WebSocket("ws://localhost:8080/data");
+
+        ws.onmessage = (event) => {
+            try {
+                const endMessage: string = "CSV file successfully processed";
+                if (event.data !== endMessage) {
+
+                    console.log(event.data);
+                    const message = JSON.parse(event.data);
+                    setInfo((prevInfo) => [...prevInfo, message]);
+                    
+                }
+                if (event.data === endMessage) {
+                    console.log("hey");
+                    ws.close();
+                }
+            } catch (error) {
+                console.error("Error parsing WebSocket message:", error);
+            }
+        };
+
+        ws.onclose = () => {
+            console.log("Connection closed");
+        };
+
+        // return () => {
+        //   ws.close();
+        // };
     }, []);
-  
+
     if (info.length === 0) {
-      return <div>Loading...</div>;
+        return <div className="loading">Loading...</div>;
     }
-  
-    const chartData = [['Timestamp', 'Transitions'], ...info];
-  
+
+    const chartData = [["Timestamp", "Transitions"], ...info];
+
     const chartOptions = {
-     chart: {
-      title: 'Transitions',
-      subtitle: 'in %',
-     },
-      hAxis: {
-        title: 'Time',
-      },
-      vAxis: {
-        title: 'Transitions',
-        viewWindow: {
-          min: 0,
-          max: 30000,
-        }
-      },
-      
+        chart: {
+            title: "Transitions",
+            subtitle: "in %",
+        },
+        hAxis: {
+            title: "Time",
+        },
+        vAxis: {
+            title: "Transitions",
+            viewWindow: {
+                min: 0,
+                max: 40000,
+            },
+        },
     };
-  
+
     return (
-      <div className="chart-container">
-        <Chart chartType="LineChart" options={chartOptions}  data={chartData} legendToggle />
-      </div>
+        <div className="container chart-container chart-container mt-2">
+            <div className="row justify-content-center text-center">
+                <h2>Transferências</h2>
+                <Chart
+                    chartType="LineChart"
+                    options={chartOptions}
+                    data={chartData}
+                    legendToggle
+                />
+            </div>
+        </div>
     );
-  };
-  
+};
+
 export default TransferChart;
-  

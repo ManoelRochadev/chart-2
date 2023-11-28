@@ -20,11 +20,10 @@ const App = () => {
 
         setLoadingServer(true);
 
-        const responses: Array<string> = ["graph-cpu", "graph-transf"];
         const url: string =
-            `${params.sort().join(" ")}` === responses.sort().join(" ")
+            params.includes("graph-cpu") && params.includes("graph-transf")
                 ? "teste_start"
-                : params[0] === "graph-cpu"
+                : params.includes("graph-cpu")
                 ? "teste_cpu"
                 : "teste_data";
 

@@ -46,12 +46,14 @@ const FormController = ({ initServer }: FormProp) => {
                                         <div className="col-auto">
                                             <div className="cpu-select">
                                                 <input
+                                                    id="btn-cpu"
                                                     onClick={showCpuOptions}
                                                     type="checkbox"
                                                     name="graph-cpu"
-                                                    className="cpu-checkbox me-1"
+                                                    className="btn-check cpu-checkbox"
+                                                    autoComplete="off"
                                                 />
-                                                <label>
+                                                <label className="btn border border-info border-2" htmlFor="btn-cpu">
                                                     CPU
                                                 </label>
                                                 {
@@ -61,12 +63,14 @@ const FormController = ({ initServer }: FormProp) => {
                                         </div>
                                         <div className="col-auto">
                                             <input
+                                                id="btn-transfer"
                                                 onClick={showTransferOptions}
                                                 type="checkbox"
                                                 name="graph-transf"
-                                                className="me-1"
+                                                className="btn-check"
+                                                autoComplete="off"
                                             />
-                                            <label>
+                                            <label  className="btn border border-info border-2" htmlFor="btn-transfer">
                                                 TRANSIÇÕES
                                             </label>
                                             {

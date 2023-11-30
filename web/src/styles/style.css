@@ -1,17 +1,39 @@
+:root {
+    --pallet_A_color_1: #0c356a;
+    --pallet_A_color_2: #0174be;
+    --pallet_A_color_3: #ffc436;
+    --pallet_A_color_4: #fff0ce;
+    --pallet_B_color_1: #f0f0f0;
+    --pallet_B_color_2: #213555;
+    --pallet_B_color_3: #4f709c;
+    --pallet_B_color_4: #e5d283;
+}
+@keyframes smooth {
+    0% {
+        opacity: 0;
+        height: 0;
+    }
+
+    100% {
+        opacity: 1;
+        height:auto;
+    }
+}
+
 body {
-    background-color: rgb(220, 220, 255);
+    background-color: white;
 }
 #root {
- padding: 0 0 0 ;
+    padding: 0 0 0;
 }
 .navbar-brand {
     font-size: 24px;
-    color: aliceblue;
+    color: white;
     font-weight: 600;
 }
 
 .navbar {
-    background-color: rgb(40, 40, 100);
+    background-color: var(--pallet_A_color_1);
 }
 
 .nav-item {
@@ -25,13 +47,15 @@ body {
     font-weight: 800;
 }
 
-.nav-link.active, .nav-link:hover, .navbar-brand:hover {
-    color:rgb(95, 109, 109);
+.nav-link.active,
+.nav-link:hover,
+.navbar-brand:hover {
+    color: rgb(95, 109, 109);
     font-weight: 900;
 }
 
 #graficos {
-    background-color:cornflowerblue;
+    background-color: cornflowerblue;
     margin-top: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
@@ -42,12 +66,16 @@ body {
     padding-bottom: 30px;
 }
 
-.form-controler-panel {
-    padding:  20px 20px 20px 20px;
+.form-controller-panel {
+    padding: 20px 20px 20px 20px;
 }
 
 .card-header {
-    background: #2737be;
+    background-color: var(--pallet_A_color_1);
+}
+
+.card-body {
+    background-color: white;
 }
 
 .loading {
@@ -58,9 +86,31 @@ body {
     padding: 20px 20px 20px 20px;
     background-color: rgb(255, 255, 255);
     border-radius: 10px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.75);
     display: flex;
     justify-content: center;
     align-items: center;
     height: 80vh;
+}
+
+.reload-button {
+    margin-top: 20px;
+}
+.cpu-options {
+    /* color: white; */
+    /* background-color: var(--pallet_A_color_1); */
+    animation: smooth 1s;
+}
+/* .cpu-options select {
+    background-color: var(--pallet_A_color_2);
+} */
+.cpu-options option:hover {
+    background-color: var(--pallet_A_color_4);
+} 
+.transfer-options {
+    animation: smooth 1s;
+}
+
+input [type="range"]:hover {
+    background-color: #000;
 }

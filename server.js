@@ -8,7 +8,7 @@ import { Tail } from "tail";
 import child_process from 'child_process';
 import { fileURLToPath } from 'url';
 import os from 'os';
-import { dir } from "console";
+import { modifyConfigFile } from "./config-mm-direct.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
-const port = 8080;
+const port = 3333;
 
 // start react app
 const reactApp = path.join(__dirname, './web');
@@ -25,7 +25,9 @@ const reactApp = path.join(__dirname, './web');
 const directories = fs.readdirSync(reactApp)
 // se existir não existir node_modules, instalar as dependências
 if (!directories.includes('node_modules')) {
-  child_process.execSync('npm install')
+  child_process.execSync('npm install', {
+    cwd: reactApp
+  })
 }
 
 const reactProcess = child_process.spawn('npm', [ 'run', 'dev'], {
@@ -37,20 +39,7 @@ reactProcess.stdout.on('data', (data) => {
   console.log(output);
 });
 
-const server = app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
 
-/*
-const serverhttp = express();
-
-const porthttp = 8081;
-
-const server2 = serverhttp.listen(porthttp, () => {
-  console.log(`rota http para os diretórios listar os diretórios: http://localhost:${porthttp}/list-directories`);
-  console.log(`rota para enviar o local do MM-DIRECT: http://localhost:${porthttp}/select-location`)
-});
-*/
 let rootPath = null; // Caminho do arquivo CSV a ser processado
 // ler arquivo json config.json
 const config = await JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json'), 'utf-8'));
@@ -109,12 +98,24 @@ const x = [];
 const y = [];
 let databaseStartupCpu = 0;
 
+const server = app.listen(port, () => {
+  console.log(`rota para configuração do arquivo redis_ir.conf: http://localhost:${port}/config`);
+});
+
 // Criar um servidor WebSocket
 const wss = new WebSocketServer({ server }, () => {
   console.log(`
   rota para o dataset de comandos por segundo: ws://localhost:8080/data
   rota para o dataset de uso de cpu: ws://localhost:8080/cpu
   `);
+});
+
+app.post('/config', express.json(), (req, res) => {
+  const config = req.body.config;
+
+  modifyConfigFile(config);
+  
+  res.json(config);
 });
 
 

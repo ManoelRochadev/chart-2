@@ -10,7 +10,7 @@ const TransferChart = () => {
     const [info, setInfo] = useState<TransitionData[]>([]);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8080/data");
+        const ws = new WebSocket("ws://localhost:3333/data");
 
         ws.onmessage = (event) => {
             try {

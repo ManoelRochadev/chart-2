@@ -62,4 +62,10 @@ const CpuOptions = () => {
     );
 };
 
+// systemMonitoring = "OFF",
+// stopSystemMonitoringEndBenchmark = "ON",
+// systemMonitoringCsvFilename = "system_monitoring/system_monitoring.csv",
+// systemMonitoringTimeInterval = 10,
+// overwriteSystemMonitoring = "ON"
+
 export default CpuOptions;

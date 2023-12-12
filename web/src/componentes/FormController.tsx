@@ -99,4 +99,8 @@ const FormController = ({ initServer }: FormProp) => {
         </div>
     );
 };
+
+// redisHostname = "127.0.0.1",
+// redisPort = 6379,
+
 export default FormController;

@@ -63,4 +63,7 @@ const TransferOptions = () => {
     );
 };
 
+// generateExecutedCommandsCsv = "OFF",
+// executedCommandsCsvFilename = "datasets/datasets.csv",
+
 export default TransferOptions;

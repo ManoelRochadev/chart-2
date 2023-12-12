@@ -10,7 +10,7 @@ const CpuChart = () => {
     const [data, setData] = useState<CpuData[]>([]);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:8080/cpu");
+        const ws = new WebSocket("ws://localhost:8081/cpu");
 
         ws.onmessage = (event) => {
             try {

@@ -15,7 +15,7 @@ const CpuChart = () => {
         ws.onmessage = (event) => {
             try {
               const message = JSON.parse(event.data);
-              console.log(message);
+            //   console.log(message);
                 setData((prevData) => [...prevData, message]);
             } catch (error) {
                 console.error("Error parsing WebSocket message:", error);

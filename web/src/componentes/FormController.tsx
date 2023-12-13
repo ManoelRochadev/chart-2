@@ -34,23 +34,28 @@ const FormController = ({ initServer }: FormProp) => {
     return (
         <div className="container form-controller-panel">
             <div className="card">
-                <h3 className="card-header text-light">MM-DIRECT</h3>
-                <div className="card-body">
+                <h3 className="card-header text-light">BENCHMARK</h3>
+                <div className="card-body rounded">
                     <form method="post" onSubmit={handleSubmit}>
                         <div className="row justify-content-center text-center">
                             <div className="col-auto">
-                                <p className="display-6">GRÁFICOS </p>
-                                <div className="row">
+                                <p className="display-6">GRÁFICOS</p>
+                                <div className="row justify-content-center">
                                     <div className="col-auto">
                                         <input
                                             id="check-cpu"
                                             onClick={showCpuOptions}
                                             type="checkbox"
                                             name="graph-cpu"
-                                            className="btn btn-check cpu-checkbox me-1"
+                                            className="chart_option btn btn-check cpu-checkbox me-1"
                                             autoComplete="off"
                                         />
-                                        <label className="h5 border border-2 border-info rounded p-1" htmlFor="check-cpu">CPU</label>
+                                        <label
+                                            className="h5 border border-2 border-info rounded p-2"
+                                            htmlFor="check-cpu"
+                                        >
+                                            CPU
+                                        </label>
                                     </div>
                                     <div className="col-auto">
                                         <input
@@ -58,10 +63,15 @@ const FormController = ({ initServer }: FormProp) => {
                                             onClick={showTransferOptions}
                                             type="checkbox"
                                             name="graph-transf"
-                                            className="btn btn-check me-1"
+                                            className="chart_option btn btn-check me-1"
                                             autoComplete="off"
                                         />
-                                        <label className="h5 border border-2 border-info rounded p-1" htmlFor="check-transfer">TRANSIÇÕES</label>
+                                        <label
+                                            className="h5 border border-2 border-info rounded p-2"
+                                            htmlFor="check-transfer"
+                                        >
+                                            TRANSIÇÕES
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -72,7 +82,9 @@ const FormController = ({ initServer }: FormProp) => {
                                 {cpuOptionsVisibility && <CpuOptions />}
                             </div>
                             <div className="col-auto">
-                                {transferOptionsVisibility && <TransferOptions />}
+                                {transferOptionsVisibility && (
+                                    <TransferOptions />
+                                )}
                             </div>
                         </div>
 

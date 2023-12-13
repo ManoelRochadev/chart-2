@@ -17,7 +17,7 @@ const TransferChart = () => {
                 const endMessage: string = "CSV file successfully processed";
                 if (event.data !== endMessage) {
 
-                    console.log(event.data);
+                    // console.log(event.data);
                     const message = JSON.parse(event.data);
                     setInfo((prevInfo) => [...prevInfo, message]);
                     
@@ -66,7 +66,7 @@ const TransferChart = () => {
     return (
         <div className="container chart-container chart-container mt-2">
             <div className="row justify-content-center text-center">
-                <h2>Transferências</h2>
+                <h2>Transições</h2>
                 <Chart
                     chartType="LineChart"
                     options={chartOptions}

@@ -8,15 +8,17 @@ const TransferOptions = () => {
     };
 
     return (
-        <div className="card transfer-options mx-1 p-3">
+        <div className="card transfer-options mx-1 py-3 px-4">
             <div className="col-auto">
                 <h3 className="text-center">Transições</h3>
-                <select className="form-select" name="drop">
-                    <option selected>PARÂMETROS</option>
-                    <option value="1">Opção 1</option>
-                    <option value="2">Opção 2</option>
-                    <option value="3">Opção 3</option>
-                </select>
+                <label htmlFor="transfer_file_name_input" className="form-label">
+                    Nome do arquivo
+                </label>
+                <input
+                    type="text"
+                    className="form-control"
+                    id="transfer_file_name_input"
+                />
             </div>
 
             <div className="col-auto mt-3">
@@ -33,7 +35,7 @@ const TransferOptions = () => {
                         max="5"
                         id="customRange2"
                     />
-                    <div className="card col-auto ms-3 text-center">
+                    <div className="card col ms-3 text-center">
                         <span>{value}</span>
                     </div>
                 </div>

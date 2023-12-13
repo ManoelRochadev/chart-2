@@ -1,9 +1,0 @@
-ir.csv
-datasets.csv
-logs
-node_modules
-package-lock.json
-database_recovery.txt
-database_startup.txt
-end_time.txt
-other_elements.txt

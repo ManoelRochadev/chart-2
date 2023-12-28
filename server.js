@@ -59,42 +59,6 @@ const config = await JSON.parse(fs.readFileSync(path.join(__dirname, 'config.jso
 
 rootPath = os.homedir() + config.path;
 
-console.log(`path MM-DIRECT: ${rootPath}`);
-
-/*
-serverhttp.post('/select-location', express.json(), (req, res) => {
-  const { location } = req.body; // Assume que o cliente irá enviar o local do MM-DIRECT no corpo da requisição
-  console.log(location);
-  // Verifica se o local é válido e inclue o nome do diretório do MM-DIRECT
-  if (location !== "MM-DIRECT") {
-    res.status(400).send('Local inválido. Certifique-se de que o diretório do MM-DIRECT está incluído.');
-  }
-  const directoryPath = os.homedir() + location;
-  if (directoryPath) {
-    // Atualiza o caminho do arquivo CSV a ser processado
-    rootPath = location;
-    res.status(200).send('Local válido.');
-  } else {
-    res.status(400).send('Local inválido. Certifique-se de que o arquivo/diretório existe.');
-  }
-});
-
-serverhttp.get('/list-directories', (req, res) => {
-  // listar os diretórios a patir do caminho do usuário
-  const { location } = req.query;
-
-  const directoryPath = os.homedir() + location;
-
-  fs.readdir(directoryPath, (err, files) => {
-    if (err) {
-      return res.status(500).send('Erro ao listar os diretórios');
-    }
-    const directories = files.filter((file) => fs.statSync(path.join(directoryPath, file)).isDirectory());
-    res.json(directories);
-  });
-});
-*/
-
 // Caminho do arquivo CSV a ser processado
 //path.join(__dirname, '../../MM-DIRECT/src/datasets/datasets.csv');
 const inputPath = rootPath + "/src/datasets/datasets.csv"
@@ -118,7 +82,7 @@ const wss = new WebSocketServer({ server }, () => {
   rota para o dataset de uso de cpu: ws://localhost:8080/cpu
   `);
 });
-
+// rota para configurar o arquivo de configuração do MM-DIRECT
 app.post('/config', express.json(), (req, res) => {
   const config = req.body.config;
 
@@ -127,7 +91,7 @@ app.post('/config', express.json(), (req, res) => {
   res.json(config);
 });
 
-
+// função para contagem de comandos por segundo
 const processaCSV = async (ws, inputPath) => {
   fs.createReadStream(inputPath, {
     start: total,
@@ -180,6 +144,7 @@ const processaCSV = async (ws, inputPath) => {
     });
 }
 
+// função para processar o dataset de uso de cpu
 const processaCpu = async (ws, pathCpu) => {
   const data = await fs.promises.readFile(pathCpu, 'utf-8');
   const lines = data.trim().split('\n');
@@ -205,9 +170,11 @@ const processaCpu = async (ws, pathCpu) => {
   }
 }
 
+// conexão websocket
 wss.on('connection', async (ws, req) => {
   console.log('Client connected');
 
+  // rota websocket para o dataset de comandos por segundo
   if (req.url === '/data') {
     const tail = new Tail(inputPath);
 
@@ -248,6 +215,7 @@ wss.on('connection', async (ws, req) => {
       }
     });
 
+    // se o usuário fechar a conexão, encerre o processo do servidor Redis e pare de ler o arquivo CSV
     ws.on('close', () => {
       tail.unwatch();
       // limpar os arrays
@@ -257,6 +225,7 @@ wss.on('connection', async (ws, req) => {
       database_startup_time = 0;
     });
   }
+  // rota websocket para o dataset de uso de cpu
   if (req.url === '/cpu') {
     const tail = new Tail(pathCpu);
 
@@ -277,6 +246,7 @@ wss.on('connection', async (ws, req) => {
     });
 
 
+    // se o usuário fechar a conexão, encerre o processo do servidor Redis e pare de ler o arquivo CSV
     ws.on('close', () => {
       tail.unwatch();
       // limpar os arrays
@@ -285,7 +255,7 @@ wss.on('connection', async (ws, req) => {
     });
 
   }
-  // rotar para iniciar o servidor redis
+  // rotar para iniciar o servidor MM-DIRECT
   if (req.url === '/start') {
     const redisServerPath = path.join(rootPath, '/src');
 
@@ -298,6 +268,8 @@ wss.on('connection', async (ws, req) => {
     if (fs.existsSync(logFile)) {
       fs.unlinkSync(logFile);
     }
+
+    // iniciar o servidor MM-DIRECT
     const child = child_process.spawn('./redis-server');
 
     child.on('error', (err) => {
@@ -311,10 +283,12 @@ wss.on('connection', async (ws, req) => {
           ws.close();
         });
     */
+   // ouvir o evento de saída do processo
     child.stdout.on('data', (data) => {
       ws.send('Redis server started');
       const output = data.toString();
       console.log(output);
+      ws.send(output);
 
       // Use uma expressão regular para verificar a mensagem
       const regex = /Memtier benchmark execution finished: \d+\.\d+ seconds\./;
@@ -345,7 +319,7 @@ wss.on('connection', async (ws, req) => {
       child.kill();
     });
   }
-  // rota para parar o servidor redis
+  // rota para parar o servidor MM-DIRECT
   if (req.url === '/stop') {
     const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
 
@@ -378,6 +352,4 @@ wss.on('connection', async (ws, req) => {
   else {
     ws.send('Invalid URL');
   }
-
-
 });

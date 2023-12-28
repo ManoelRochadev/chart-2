@@ -1,22 +1,38 @@
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-interface CpuData {
-    timestamp: number;
-    usage: number;
-}
 
 const CpuChart = () => {
-    const [data, setData] = useState<CpuData[]>([]);
+    const [data, setData] = useState<[number, number][]>([]);
+    // variável para armazenar o timestamp da última atualização
+    const timestamps: number[] = [];
+    // variável para armazenar a porcentagem de uso da CPU
+    const cpuUsage: number[] = [];
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/cpu");
 
         ws.onmessage = (event) => {
             try {
-              const message = JSON.parse(event.data);
-              console.log(message);
-                setData((prevData) => [...prevData, message]);
+                const message = JSON.parse(event.data);
+
+                timestamps.push(message[0]);
+                cpuUsage.push(message[1]);
+                if (timestamps.length > 1 && timestamps[timestamps.length - 1] === timestamps[timestamps.length - 2]) {
+
+                    const media = (cpuUsage[cpuUsage.length - 1] + cpuUsage[cpuUsage.length - 2]) / 2;
+
+                    setData((dadosAnteriores) => {
+                        const novosDados = [...dadosAnteriores];
+                        novosDados[novosDados.length - 1] = [message[0], media];
+                        return novosDados;
+                    });
+                } else {
+                    // Se os timestamps forem diferentes, adiciona simplesmente o novo ponto de dados
+
+                    setData((dadosAnteriores) => [...dadosAnteriores, message]);
+                }
+
             } catch (error) {
                 console.error("Error parsing WebSocket message:", error);
             }
@@ -25,10 +41,6 @@ const CpuChart = () => {
         ws.onclose = () => {
             console.log("Connection closed");
         };
-
-        // return () => {
-        //     ws.close();
-        // };
     }, []);
 
     if (data.length === 0) {
@@ -36,6 +48,7 @@ const CpuChart = () => {
     }
 
     const chartData = [["Timestamp", "CPU Usage"], ...data];
+
 
     const chartOptions = {
         chart: {

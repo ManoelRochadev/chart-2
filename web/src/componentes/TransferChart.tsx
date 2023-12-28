@@ -17,7 +17,7 @@ const TransferChart = () => {
                 const endMessage: string = "CSV file successfully processed";
                 if (event.data !== endMessage) {
 
-                    console.log(event.data);
+
                     const message = JSON.parse(event.data);
                     setInfo((prevInfo) => [...prevInfo, message]);
                     

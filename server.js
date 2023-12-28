@@ -9,7 +9,6 @@ import child_process from 'child_process';
 import { fileURLToPath } from 'url';
 import os from 'os';
 import { modifyConfigFile } from "./config-mm-direct.js";
-import { modifyConfigFile } from "./config-mm-direct.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +16,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(cors());
 
-const port = 8080;
+const port = 8081;
 
 // start react app
 const reactApp = path.join(__dirname, './web');

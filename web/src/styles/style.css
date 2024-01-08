@@ -16,7 +16,7 @@
 
     100% {
         opacity: 1;
-        height:auto;
+        height: auto;
     }
 }
 
@@ -106,7 +106,7 @@ body {
 } */
 .cpu-options option:hover {
     background-color: var(--pallet_A_color_4);
-} 
+}
 .transfer-options {
     animation: smooth 1s;
 }
@@ -115,7 +115,78 @@ input [type="range"]:hover {
     background-color: #000;
 }
 
-.chart_option:checked ~ label{
+.chart_option:checked ~ label {
     background-color: var(--pallet_B_color_1);
     color: var(--pallet_A_color_2);
+}
+.terminal {
+    height: 100%;
+    width: 900px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.react-terminal {
+    /* Estilos específicos para o componente TerminalUI */
+    overflow-y: auto; /* Adiciona uma barra de rolagem vertical quando necessário */
+    overflow-x: auto; /* Oculta a barra de rolagem horizontal */
+    font-size: smaller;
+}
+
+.react-terminal::-webkit-scrollbar {
+    width: 6px; /* Largura da barra de rolagem */
+    height: 6px;
+}
+
+.react-terminal::-webkit-scrollbar-thumb {
+    background-color: #888; /* Cor do indicador da barra de rolagem */
+    border-radius: 6px; /* Borda arredondada do indicador da barra de rolagem */
+}
+
+.react-terminal::-webkit-scrollbar-track {
+    background-color: #252a33; /* Cor de fundo da barra de rolagem */
+}
+
+.terminal-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button {
+    background-color: transparent;
+    color: #000;
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+    margin: 5px 5px 5px 5px;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.nav-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.button.selected {
+    /* Adicione estilos para o botão selecionado aqui */
+    background-color: #ddd;
+    /* Outros estilos desejados */
+}
+
+.item-hidden {
+    position: absolute;
+    visibility: hidden;
+    height: 0;
+    width: 0;
+    margin: 0;
+    padding: 0;
 }

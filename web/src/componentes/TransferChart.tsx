@@ -10,14 +10,14 @@ const TransferChart = () => {
     const [info, setInfo] = useState<TransitionData[]>([]);
 
     useEffect(() => {
-        const ws = new WebSocket("ws://localhost:3333/data");
+        const ws = new WebSocket("ws://localhost:8081/data");
 
         ws.onmessage = (event) => {
             try {
                 const endMessage: string = "CSV file successfully processed";
                 if (event.data !== endMessage) {
 
-                    // console.log(event.data);
+
                     const message = JSON.parse(event.data);
                     setInfo((prevInfo) => [...prevInfo, message]);
                     
@@ -58,7 +58,7 @@ const TransferChart = () => {
             title: "Transitions",
             viewWindow: {
                 min: 0,
-                max: 40000,
+                max: 60000,
             },
         },
     };

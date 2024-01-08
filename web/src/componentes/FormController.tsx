@@ -25,7 +25,7 @@ const FormController = ({ initServer }: FormProp) => {
 
         const form = e.target;
         const formData = new FormData(form);
-
+        console.log(formData)
         const formJson = Object.fromEntries(formData.entries());
         console.log(...Object.keys(formJson));
         initServer(Object.keys(formJson));
@@ -88,8 +88,8 @@ const FormController = ({ initServer }: FormProp) => {
                             </div>
                         </div>
 
-                        <div className=" row justify-content-center panel-buttons">
-                            <div className="col-auto">
+                        <div className="row justify-content-center panel-buttons">
+                            <div className="col-auto offset-5">
                                 <button
                                     className="btn btn-primary me-3"
                                     type="reset"
@@ -101,6 +101,12 @@ const FormController = ({ initServer }: FormProp) => {
                                     className="btn btn-success"
                                 >
                                     Start
+                                </button>
+                            </div>
+                            <div className="col-auto offset-3">
+                                <button type="button" className="btn btn-secondary">
+                                    <i className="bi bi-terminal-fill me-2"></i>
+                                    Button
                                 </button>
                             </div>
                         </div>

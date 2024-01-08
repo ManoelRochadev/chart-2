@@ -18,6 +18,8 @@ const TransferOptions = () => {
                     type="text"
                     className="form-control"
                     id="transfer_file_name_input"
+                    name="tranfer_file_name"
+                    placeholder="Dataset"
                 />
             </div>
 

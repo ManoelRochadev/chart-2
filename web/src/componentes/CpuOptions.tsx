@@ -17,6 +17,8 @@ const CpuOptions = () => {
                     type="text"
                     className="form-control"
                     id="cpu_file_name_input"
+                    name="cpu_file_name_input"
+                    placeholder="system_cpu"
                 />
             </div>
 
@@ -34,6 +36,7 @@ const CpuOptions = () => {
                         max="60"
                         step={5}
                         id="cpu_interval"
+                        name="systemMonitoringTimeInterval"
                     />
                     <div className="card col ms-3 text-center">
                         <span>{value}s</span>
@@ -45,7 +48,7 @@ const CpuOptions = () => {
                 <input
                     className="form-check-input me-1"
                     type="checkbox"
-                    name="check-1"
+                    name="stopSystemMonitoringEndBenchmark"
                 />
                 <label className="form-check-label me-3">
                     STOP MONITORING AT END
@@ -53,7 +56,7 @@ const CpuOptions = () => {
                 <input
                     className="form-check-input me-1"
                     type="checkbox"
-                    name="check-2"
+                    name="overwriteSystemMonitoring"
                 />
                 <label className="form-check-label me-3"> OVERWRITE </label>
             </div>

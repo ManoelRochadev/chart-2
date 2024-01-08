@@ -23,7 +23,6 @@ const TransferChart = () => {
                     
                 }
                 if (event.data === endMessage) {
-                    console.log("hey");
                     ws.close();
                 }
             } catch (error) {

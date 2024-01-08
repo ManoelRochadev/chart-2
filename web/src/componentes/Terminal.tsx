@@ -7,7 +7,7 @@ interface TerminalData {
 export const TerminalController = ({ value }: TerminalData) => {
 
   return (
-    <div className="terminal">
+    <div className="terminal container-fluid">
       <Terminal
         name='MM-DIRECT'
         height='320px'

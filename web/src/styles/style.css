@@ -1,4 +1,8 @@
-:root {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* :root {
     --pallet_A_color_1: #0c356a;
     --pallet_A_color_2: #0174be;
     --pallet_A_color_3: #ffc436;
@@ -7,8 +11,9 @@
     --pallet_B_color_2: #213555;
     --pallet_B_color_3: #4f709c;
     --pallet_B_color_4: #e5d283;
-}
-@keyframes smooth {
+} */
+
+/* @keyframes smooth {
     0% {
         opacity: 0;
         height: 0;
@@ -18,67 +23,69 @@
         opacity: 1;
         height: auto;
     }
-}
+} */
 
-body {
+/* body {
     background-color: var(--pallet_B_color_1);
-}
-#root {
+} */
+
+/* #root {
     padding: 0 0 0;
-}
-.navbar-brand {
+} */
+
+/* .navbar-brand {
     font-size: 24px;
     color: white;
     font-weight: 600;
-}
+} */
 
-.navbar {
+/* .navbar {
     background-color: var(--pallet_A_color_1);
-}
+} */
 
-.nav-item {
+/* .nav-item {
     padding-right: 10px;
     padding-left: 10px;
-}
+} */
 
-.nav-link {
+/* .nav-link {
     font-size: 17px;
     color: aliceblue;
     font-weight: 800;
-}
+} */
 
-.nav-link.active,
+/* .nav-link.active,
 .nav-link:hover,
 .navbar-brand:hover {
     color: rgb(95, 109, 109);
     font-weight: 900;
-}
+} */
 
-#graficos {
+/* #graficos {
     background-color: cornflowerblue;
     margin-top: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
-}
+} */
 
-.graph {
+/* .graph {
     padding-top: 10px;
     padding-bottom: 30px;
-}
+} */
 
-.form-controller-panel {
+/* .form-controller-panel {
     padding: 20px 20px 20px 20px;
-}
+} */
 
-.card-header {
+/* .card-header {
     background-color: var(--pallet_A_color_1);
-}
+} */
 
-.card-body {
+/* .card-body {
     background-color: white;
-}
+} */
 
-.loading {
+/* .loading {
     margin-top: 20px;
     margin-bottom: 20px;
     margin-left: 20px;
@@ -91,22 +98,24 @@ body {
     justify-content: center;
     align-items: center;
     height: 80vh;
-}
+} */
 
-.reload-button {
+/* .reload-button {
     margin-top: 20px;
-}
-.cpu-options {
-    /* color: white; */
-    /* background-color: var(--pallet_A_color_1); */
+} */
+
+/* .cpu-options {
     animation: smooth 1s;
-}
+} */
+
 /* .cpu-options select {
     background-color: var(--pallet_A_color_2);
 } */
+/* 
 .cpu-options option:hover {
     background-color: var(--pallet_A_color_4);
 }
+
 .transfer-options {
     animation: smooth 1s;
 }
@@ -119,45 +128,46 @@ input [type="range"]:hover {
     background-color: var(--pallet_B_color_1);
     color: var(--pallet_A_color_2);
 }
+
 .terminal {
     height: 100%;
-    width: 900px;
+    width: 1200px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-}
+    align-items: center; */
+/* } */
 
-.react-terminal {
+/* .react-terminal { */
     /* Estilos específicos para o componente TerminalUI */
-    overflow-y: auto; /* Adiciona uma barra de rolagem vertical quando necessário */
-    overflow-x: auto; /* Oculta a barra de rolagem horizontal */
-    font-size: smaller;
-}
+    /* overflow-y: auto; Adiciona uma barra de rolagem vertical quando necessário */
+    /* overflow-x: auto; Oculta a barra de rolagem horizontal */
+    /* font-size: smaller; */
+/* } */
 
-.react-terminal::-webkit-scrollbar {
-    width: 6px; /* Largura da barra de rolagem */
-    height: 6px;
-}
+/* .react-terminal::-webkit-scrollbar {
+    width: 6px; Largura da barra de rolagem */
+    /* height: 6px;
+} */
 
-.react-terminal::-webkit-scrollbar-thumb {
-    background-color: #888; /* Cor do indicador da barra de rolagem */
-    border-radius: 6px; /* Borda arredondada do indicador da barra de rolagem */
-}
+/* .react-terminal::-webkit-scrollbar-thumb { */
+    /* background-color: #888; Cor do indicador da barra de rolagem */
+    /* border-radius: 6px; Borda arredondada do indicador da barra de rolagem */
+/* } */
 
-.react-terminal::-webkit-scrollbar-track {
-    background-color: #252a33; /* Cor de fundo da barra de rolagem */
-}
+/* .react-terminal::-webkit-scrollbar-track {
+    background-color: #252a33;  Cor de fundo da barra de rolagem 
+} */
 
-.terminal-container {
+/* .terminal-container {
     height: 100%;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-}
+} */
 
-.button {
+/* .button {
     background-color: transparent;
     color: #000;
     border-radius: 5px;
@@ -174,19 +184,19 @@ input [type="range"]:hover {
     flex-direction: row;
     justify-content: center;
     align-items: center;
-}
+} */
 
-.button.selected {
+/* .button.selected { */
     /* Adicione estilos para o botão selecionado aqui */
-    background-color: #ddd;
+    /* background-color: #ddd; */
     /* Outros estilos desejados */
-}
+/* } */
 
-.item-hidden {
+/* .item-hidden {
     position: absolute;
     visibility: hidden;
     height: 0;
     width: 0;
     margin: 0;
     padding: 0;
-}
+} */

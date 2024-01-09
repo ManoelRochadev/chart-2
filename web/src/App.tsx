@@ -5,6 +5,7 @@ import TransferChart from "./componentes/TransferChart";
 import FormController from "./componentes/FormController";
 import CpuChart from "./componentes/CpuChart";
 import { TerminalController } from "./componentes/Terminal";
+import MemoryChart from "./componentes/MemoryChart";
 type NavBarProps = {
   onButtonClick: (buttonName: string) => void;
 };
@@ -31,7 +32,6 @@ const App = () => {
     const ws = new WebSocket('ws://localhost:8081/start');
 
     ws.onmessage = (event) => {
-      console.log(event.data);
       setLogs((prevLogs) => [...prevLogs, event.data]);
       if (event.data === "Generating information database commands") {
         console.log("Server started");
@@ -44,7 +44,7 @@ const App = () => {
         setLoadingServer(false);
         const interval = setInterval(() => {
           setGenerateArquiveMonitoring(true);
-        }, 1000);
+        }, 500);
 
         return () => clearInterval(interval);
       }
@@ -115,8 +115,15 @@ const App = () => {
           >
             <TransferChart />
             {
-              generateArquiveMonitoring && <CpuChart />
+              generateArquiveMonitoring ? <>
+              <CpuChart />
+              <MemoryChart />
+              </> : (
+                <>
+                </>
+              )
             }
+            
           </div>
         )
         

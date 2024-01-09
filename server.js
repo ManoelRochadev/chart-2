@@ -164,6 +164,33 @@ const processaCpu = async (ws, pathCpu) => {
   }
 }
 
+// função para processar o dataset de uso de memória
+const processaMemoria = async (ws, pathMemoria) => {
+  const data = await fs.promises.readFile(pathCpu, 'utf-8');
+  const lines = data.trim().split('\n');
+
+  if (lines.length > 2) {
+    const databaseStartupLine = lines[1].split(';');
+    const databaseStartupTime = parseInt(databaseStartupLine[2]);
+
+    databaseStartupCpu = databaseStartupTime;
+
+    lines.splice(0, 2); // Remove header and database startup information
+
+    for (let i = 0; i < lines.length; i++) {
+      const linha = lines[i].split(';');
+      if (linha[0].match(/^\d+$/)) {
+        const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
+        x.push(num);
+        y.push(parseFloat(linha[2].replace(',', '.')));
+
+        ws.send(JSON.stringify([num, parseInt(lines[2])]));
+      }
+    }
+  }
+
+}
+
 // conexão websocket
 wss.on('connection', async (ws, req) => {
   console.log('Client connected');
@@ -220,7 +247,7 @@ wss.on('connection', async (ws, req) => {
     });
   }
   // rota websocket para o dataset de uso de cpu
-  if (req.url === '/cpu') {
+  else if (req.url === '/cpu') {
     const tail = new Tail(pathCpu);
 
     await processaCpu(ws, pathCpu);
@@ -250,7 +277,7 @@ wss.on('connection', async (ws, req) => {
 
   }
   // rotar para iniciar o servidor MM-DIRECT
-  if (req.url === '/start') {
+  else if (req.url === '/start') {
     const redisServerPath = path.join(rootPath, '/src');
 
     // Navegue até a pasta onde o redis-server está localizado
@@ -314,7 +341,7 @@ wss.on('connection', async (ws, req) => {
     });
   }
   // rota para parar o servidor MM-DIRECT
-  if (req.url === '/stop') {
+  else if (req.url === '/stop') {
     const redisServerPath = path.join(__dirname, '../../MM-DIRECT/src');
 
     // Navegue até a pasta onde o redis-server está localizado
@@ -341,6 +368,27 @@ wss.on('connection', async (ws, req) => {
     // se o usuário fechar a conexão, encerre o processo do servidor Redis
     ws.on('close', () => {
       child.kill();
+    });
+  }
+
+  else if (req.url === '/memory') {
+    const tail = new Tail(pathCpu);
+
+    await processaMemoria(ws, pathCpu);
+
+    tail.on("line", function (data) {
+      const lines = data.split(';')
+
+      const endTime = parseInt(lines[0]);
+
+      if (lines[0].match(/^\d+$/)) {
+        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
+        x.push(num);
+        y.push(parseFloat(lines[2].replace(',', '.')));
+
+        console.log([num, parseInt(lines[2])]);
+        ws.send(JSON.stringify([num, parseInt(lines[2])]));
+      }
     });
   }
   else {

@@ -1,6 +1,6 @@
 const OptionsBoard = () => {
     return (
-        <div className="w-64  h-64 p-6 max-w-sm bg-slate-300 rounded-xl shadow-lg items-center space-x-4"></div>
+        <div className="w-full max-w-md h-64 p-6 mx-auto my-3 bg-slate-50 rounded-xl shadow-md items-center space-x-2"></div>
     );
 };
 

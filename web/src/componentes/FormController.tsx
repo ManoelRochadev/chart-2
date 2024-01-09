@@ -1,3 +1,4 @@
+import SetupForm from "./SetupForm";
 import OptionsBoard from "./OptionsBoard";
 
 interface FormProp {
@@ -5,7 +6,7 @@ interface FormProp {
 }
 
 const FormController = ({ initServer }: FormProp) => {
-    function handleSubmit(e: any) {
+    function onSubmitButtonPressed(e: any) {
         e.preventDefault();
 
         const form = e.target;
@@ -21,16 +22,17 @@ const FormController = ({ initServer }: FormProp) => {
             <div className="flex bg-my_blue rounded-t py-3 px-4 justify-center md:justify-normal">
                 <h2 className="text-2xl text-slate-100">Setup</h2>
             </div>
-            <div className="flex flex-row justify-between px-4 py-2 flex-wrap md:flex-nowrap">
-                <OptionsBoard />
-                <OptionsBoard />
-                <OptionsBoard />
+            <div className=" bg-slate-200 rounded-b">
+                <SetupForm>
+                    <OptionsBoard />
+                    <OptionsBoard />
+                    <OptionsBoard />
+                    <OptionsBoard />
+                    <OptionsBoard />
+                    <OptionsBoard />
+                </SetupForm>
             </div>
-            <div className="flex flex-row justify-evenly flex-wrap ">
-                <OptionsBoard />
-                <OptionsBoard />
-            </div>
-            {/* config category boards */}
+
         </div>
     );
 };

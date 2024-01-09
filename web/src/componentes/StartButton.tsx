@@ -1,9 +1,10 @@
-const StartButton = (click: any) => {
+import FormButton from "./FormButtton";
 
+const StartButton = () => {
     return (
-        <button onClick={click} className="btn btn-success me-3" type="submit">
-            Submit form
-        </button>
+        <FormButton color={"yellow"}>
+            START
+        </FormButton>
     );
 };
 

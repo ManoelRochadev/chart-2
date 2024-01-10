@@ -44,7 +44,7 @@ const App = () => {
         setLoadingServer(false);
         const interval = setInterval(() => {
           setGenerateArquiveMonitoring(true);
-        }, 500);
+        }, 300);
 
         return () => clearInterval(interval);
       }

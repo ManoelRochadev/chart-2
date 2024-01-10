@@ -386,7 +386,6 @@ wss.on('connection', async (ws, req) => {
         x.push(num);
         y.push(parseFloat(lines[2].replace(',', '.')));
 
-        console.log([num, parseInt(lines[2])]);
         ws.send(JSON.stringify([num, parseInt(lines[2])]));
       }
     });

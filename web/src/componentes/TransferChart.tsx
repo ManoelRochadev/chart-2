@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-interface TransitionData {
-    timestamp: number;
-    transitions: number;
-}
-
 const TransferChart = () => {
-    const [info, setInfo] = useState<TransitionData[]>([]);
+    const [info, setInfo] = useState<[number, number][]>([]);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/data");
@@ -44,7 +39,14 @@ const TransferChart = () => {
         return <div className="loading">Loading...</div>;
     }
 
-    const chartData = [["Timestamp", "Transitions"], ...info];
+    const chartData = [["Timestamp", "Transitions", { role: "style" }], ...info.map((item) => [
+        item[0],
+        item[1],
+        item[1] < 50 
+          ? "point { size: 6; fill-color: #a52714; }"
+          : null,
+      ])
+    ]
 
     const chartOptions = {
         chart: {
@@ -61,6 +63,7 @@ const TransferChart = () => {
                 max: 60000,
             },
         },
+        pointSize: 1,
     };
 
     return (

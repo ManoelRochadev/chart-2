@@ -1,11 +1,12 @@
 import { useState } from "react";
 import NavBar from "./componentes/NavBar";
 //import CpuChart from "./componentes/CpuChart";
-import TransferChart from "./componentes/TransferChart";
-import FormController from "./componentes/FormController";
-import CpuChart from "./componentes/CpuChart";
-import ReloadButton from "./componentes/ReloadButton";
-import { TerminalController } from "./componentes/Terminal";
+// import TransferChart from "./componentes/TransferChart";
+import SetupPanel from "./componentes/Form/SetupPanel";
+// import CpuChart from "./componentes/CpuChart";
+// import ReloadButton from "./componentes/ReloadButton";
+// import { TerminalController } from "./componentes/Terminal";
+
 type NavBarProps = {
     onButtonClick: (buttonName: string) => void;
 };
@@ -38,8 +39,8 @@ const App = () => {
             params.includes("graph-cpu") && params.includes("graph-transf")
                 ? "teste_start"
                 : params.includes("graph-cpu")
-                    ? "teste_cpu"
-                    : "teste_data";
+                ? "teste_cpu"
+                : "teste_data";
 
         const ws = new WebSocket(`ws://localhost:8081/${url}`);
 
@@ -67,7 +68,7 @@ const App = () => {
 
     const reload = () => {
         setLoadingServer(true);
-        setLogs([])
+        setLogs([]);
 
         delay(1000).then(() => {
             setLoadingServer(false);
@@ -80,8 +81,9 @@ const App = () => {
         return (
             <div className="nav-buttons">
                 <button
-                    className={`button ${buttonSelected === "Insights" ? "selected" : ""
-                        }`}
+                    className={`button ${
+                        buttonSelected === "Insights" ? "selected" : ""
+                    }`}
                     onClick={() => {
                         onButtonClick("Insights");
                         setShowInsights(true);
@@ -91,8 +93,9 @@ const App = () => {
                     Insights
                 </button>
                 <button
-                    className={`button ${buttonSelected === "Runtime Logs" ? "selected" : ""
-                        }`}
+                    className={`button ${
+                        buttonSelected === "Runtime Logs" ? "selected" : ""
+                    }`}
                     onClick={() => {
                         onButtonClick("Runtime Logs");
                         setShowTerminal(true);
@@ -118,35 +121,37 @@ const App = () => {
         <div>
             <NavBar />
             {!generateArquive && !generateArquiveMonitoring && (
-                <FormController initServer={initializeServer} />
+                <SetupPanel initServer={initializeServer} />
             )}
 
-            {generateArquive && (
-                <NavButtons onButtonClick={handleButtonClick} />
-            )}
-
-            {generateArquive && (
-                <div
-                    className={`chart-container ${showInsights ? "" : "item-hidden"
-                        }`}
-                >
-                    <TransferChart />
-                    {generateArquiveMonitoring && <CpuChart />}
-                </div>
-            )}
-
-            {generateArquive && (
-                <div
-                    className={`terminal-container ${showTerminal ? "" : "item-hidden"
-                        }`}
-                ></div>
-            )}
-
-            {(generateArquive || generateArquiveMonitoring) && <ReloadButton onButtonClick={reload} />}
-
-            <TerminalController value={logs} />
+            {/* <TerminalController value={logs} /> */}
         </div>
     );
 };
 
 export default App;
+
+{
+    /* {generateArquive && (
+        <NavButtons onButtonClick={handleButtonClick} />
+    )}
+
+    {generateArquive && (
+        <div
+            className={`chart-container ${showInsights ? "" : "item-hidden"
+                }`}
+        >
+            <TransferChart />
+            {generateArquiveMonitoring && <CpuChart />}
+        </div>
+    )}
+
+    {generateArquive && (
+        <div
+            className={`terminal-container ${showTerminal ? "" : "item-hidden"
+                }`}
+        ></div>
+    )}
+
+    {(generateArquive || generateArquiveMonitoring) && <ReloadButton onButtonClick={reload} />} */
+}

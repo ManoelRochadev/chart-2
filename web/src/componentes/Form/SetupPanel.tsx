@@ -5,7 +5,7 @@ interface FormProp {
     initServer: (params: Array<string>) => void;
 }
 
-const FormController = ({ initServer }: FormProp) => {
+const SetupPanel = ({ initServer }: FormProp) => {
     function onSubmitButtonPressed(e: any) {
         e.preventDefault();
 
@@ -37,4 +37,4 @@ const FormController = ({ initServer }: FormProp) => {
     );
 };
 
-export default FormController;
+export default SetupPanel;

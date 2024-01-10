@@ -1,5 +1,6 @@
 import SetupForm from "./SetupForm";
 import OptionsBoard from "./OptionsBoard";
+import { TextInput, SwitchInput, CheckboxInput, RangeInput } from "./InputTypes";
 
 interface FormProp {
     initServer: (params: Array<string>) => void;
@@ -17,14 +18,25 @@ const SetupPanel = ({ initServer }: FormProp) => {
         initServer(Object.keys(formJson));
     }
 
+    function ResetFunction() {
+        // do something
+    }
+
     return (
         <div className="container mx-auto my-8">
-            <div className="flex bg-my_blue rounded-t py-3 px-4 justify-center md:justify-normal">
+            <div className="flex bg-my_blue rounded-t py-3 px-4 justify-center">
                 <h2 className="text-2xl text-slate-100">Setup</h2>
             </div>
             <div className=" bg-slate-200 rounded-b">
-                <SetupForm>
-                    <OptionsBoard />
+                <SetupForm submitFunction={onSubmitButtonPressed} resetFunction={ResetFunction}>
+                    <OptionsBoard>
+                        <TextInput name="teste4">TESTE</TextInput>
+                        <RangeInput name="teste3">TESTE</RangeInput>
+                        <div className="flex flex-row justify-around">
+                            <SwitchInput name='teste1'>TESTE</SwitchInput>
+                            <CheckboxInput name="teste2">TESTE</CheckboxInput>
+                        </div>
+                    </OptionsBoard>
                     <OptionsBoard />
                     <OptionsBoard />
                     <OptionsBoard />

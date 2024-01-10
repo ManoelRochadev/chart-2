@@ -1,9 +1,9 @@
-const StartButton = () => {
+const StartButton = ({ onClickButton }: any) => {
     return (
         <div
-            className={`w-32 py-1 bg-green-600 rounded-lg text-center text-slate-50 font-semibold `}
+            className={`w-32 py-1 bg-emerald-600 rounded-lg text-center text-slate-50 font-semibold `}
         >
-            <button>START</button>
+            <button onClick={onClickButton}>START</button>
         </div>
     );
 };

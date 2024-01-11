@@ -4,7 +4,7 @@ import StartButton from "./StartButton";
 const SetupForm = ({ children, submitFunction, resetFunction }: any) => {
     return (
         <form>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-3 justify-center flex-wrap max-h-[75vh] md:max-h-full px-4 py-2 overflow-auto lg:overflow- scroll ">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-3 justify-center max-h-[75vh] md:max-h-full px-4 py-2 overflow-auto lg:overflow-hidden">
                 {children}
             </div>
             <div className="flex flex-row justify-center gap-3 mt-3 px-4 pb-3 flex-wrap">

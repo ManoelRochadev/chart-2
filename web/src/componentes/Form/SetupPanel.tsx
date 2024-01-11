@@ -9,13 +9,14 @@ interface FormProp {
 const SetupPanel = ({ initServer }: FormProp) => {
     function onSubmitButtonPressed(e: any) {
         e.preventDefault();
-
-        const form = e.target;
+        // Element.prototype.par
+        const form = e.target.form;
         const formData = new FormData(form);
-        console.log(formData);
-        const formJson = Object.fromEntries(formData.entries());
-        console.log(...Object.keys(formJson));
-        initServer(Object.keys(formJson));
+        // console.log(formData);
+        const formJson = formData.entries();
+        console.log(...formJson);
+        
+        // initServer(Object.keys(formJson));
     }
 
     function ResetFunction() {
@@ -23,20 +24,22 @@ const SetupPanel = ({ initServer }: FormProp) => {
     }
 
     return (
-        <div className="container mx-auto my-8">
-            <div className="flex bg-my_blue rounded-t py-3 px-4 justify-center">
+        <div className="grid container mx-auto my-8 justify-center ">
+            <div className="flex w-[90vw] bg-my_blue rounded-t py-3 px-4 justify-center">
                 <h2 className="text-2xl text-slate-100">Setup</h2>
             </div>
-            <div className=" bg-slate-200 rounded-b">
+            <div className="w-[90vw] bg-slate-200 rounded-b">
                 <SetupForm submitFunction={onSubmitButtonPressed} resetFunction={ResetFunction}>
-                    <OptionsBoard>
-                        <TextInput name="teste4">TESTE</TextInput>
-                        <RangeInput name="teste3">TESTE</RangeInput>
-                        <div className="flex flex-row justify-around">
-                            <SwitchInput name='teste1'>TESTE</SwitchInput>
-                            <CheckboxInput name="teste2">TESTE</CheckboxInput>
+                    <OptionsBoard BoardHeader="TestBoard">
+                        <TextInput TextName="teste4" TextPlaceholder="arquivo.txt">TESTE</TextInput>
+                        <RangeInput RangeName="teste3">TESTE</RangeInput>
+                        
+                        <div className="flex justify-around">
+                            <SwitchInput SwitchName='teste1'>TESTE</SwitchInput>
+                            <CheckboxInput CheckboxName="teste2">TESTE</CheckboxInput>
                         </div>
                     </OptionsBoard>
+                    
                     <OptionsBoard />
                     <OptionsBoard />
                     <OptionsBoard />

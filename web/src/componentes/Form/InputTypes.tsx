@@ -1,8 +1,8 @@
-export const TextInput = ({ TextName, children }: any) => {
+export const TextInput = ({ TextName, TextPlaceholder, children }: any) => {
     return (
-        <div className="">
+        <div className="flex flex-col">
             <label htmlFor={`switch-${TextName}`}
-                className="font-semibold align-middle text-sm"
+                className="font-semibold text-sm"
             >
                 {children}
             </label>
@@ -10,7 +10,8 @@ export const TextInput = ({ TextName, children }: any) => {
                 type="text"
                 name={TextName}
                 id={`switch-${TextName}`}
-                className="w-5/6 ml-2 mr-3 h-2 rounded"
+                className="pl-3 h-2 p-0 basis-full rounded"
+                placeholder={TextPlaceholder}
             />
         </div>
     )
@@ -42,7 +43,7 @@ export const SwitchInput = ({ SwitchName, children }: any) => {
             >
                 <input
                     type="checkbox"
-                    className="toggle -mr-2"
+                    className="toggle -mr-2 mb-7"
                     name={SwitchName}
                     id={`switch-${SwitchName}`}
                 />
@@ -52,18 +53,18 @@ export const SwitchInput = ({ SwitchName, children }: any) => {
     )
 }
 
-export const RangeInput = ({ RadioName, children }: any) => {
+export const RangeInput = ({ RangeName, children }: any) => {
     return (
-        <div className=" ">
-            <label htmlFor={`switch-${RadioName}`}
-                className="font-semibold align-middle block text-sm"
+        <div>
+            <label htmlFor={`switch-${RangeName}`}
+                className="flex items-center font-semibold align-middle  text-sm"
             >
                 {children}
                 <input
                     type="range"
-                    name={RadioName}
-                    id={`switch-${RadioName}`}
-                    className="w-5/6  ml-2 mr-3 h-2 rounded-lg cursor-pointer"
+                    name={RangeName}
+                    id={`switch-${RangeName}`}
+                    className="w-72 flex-auto ml-2 mr-3 h-2 rounded-lg cursor-pointer"
                 />
             </label>
         </div>

@@ -1,6 +1,7 @@
-const OptionsBoard = ({ children }: any) => {
+const OptionsBoard = ({ children, BoardHeader }: any) => {
     return (
-        <div className="w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-md h-64 py-3 px-7 mx-auto my-3 bg-slate-50 rounded-lg shadow-md justify-center">
+        <div className="h-fit w-full sm:w-[90vw] md:w-full max-w-xl sm:max-w-lg md:max-w-2xl lg:max-w-lg pt-3 pb-6 px-7 mx-auto my-3 space-y-5 bg-slate-50 rounded-lg shadow-md">
+            <h3 className="font-bold text-center text-2xl">{BoardHeader}</h3>
             {children}
         </div>
     );

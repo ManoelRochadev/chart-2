@@ -1,10 +1,6 @@
 import SetupForm from "./SetupForm";
 
-interface FormProp {
-    initServer: (params: Array<string>) => void;
-}
-
-const SetupPanel = ({ initServer }: FormProp) => {
+const SetupPanel = ({ initServer }:any) => {
     function onSubmitButtonPressed(e: any) {
         e.preventDefault();
 
@@ -25,7 +21,7 @@ const SetupPanel = ({ initServer }: FormProp) => {
         });
 
         postRequest.then((resp: any) => {
-            // iniciar conexão websocket
+            initServer()
         })
     }
 

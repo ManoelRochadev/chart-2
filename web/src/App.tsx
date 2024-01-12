@@ -1,9 +1,8 @@
 import { useState } from "react";
 import NavBar from "./componentes/NavBar";
+import SetupPanel from "./componentes/Form/SetupPanel";
 //import CpuChart from "./componentes/CpuChart";
 // import TransferChart from "./componentes/TransferChart";
-import SetupPanel from "./componentes/Form/SetupPanel";
-// import CpuChart from "./componentes/CpuChart";
 // import ReloadButton from "./componentes/ReloadButton";
 // import { TerminalController } from "./componentes/Terminal";
 
@@ -30,40 +29,40 @@ const App = () => {
     //     return new Promise<void>((resolve) => setTimeout(resolve, time));
     // };
 
-    const initializeServer = (params: Array<string>) => {
+    const initializeServer = () => {
         console.log("Iniciando servidor");
 
-        setLoadingServer(true);
+        setLoadingServer(!loadingServer);
 
-        const url: string =
-            params.includes("graph-cpu") && params.includes("graph-transf")
-                ? "teste_start"
-                : params.includes("graph-cpu")
-                    ? "teste_cpu"
-                    : "teste_data";
+        // const url: string =
+        //     params.includes("graph-cpu") && params.includes("graph-transf")
+        //         ? "teste_start"
+        //         : params.includes("graph-cpu")
+        //             ? "teste_cpu"
+        //             : "teste_data";
 
-        const ws = new WebSocket(`ws://localhost:8081/${url}`);
+        // const ws = new WebSocket(`ws://localhost:8081/${url}`);
 
-        ws.onmessage = (event) => {
-            // setLogs((prevLogs) => [...prevLogs, event.data]);
-            if (
-                event.data === "Generating information database commands" &&
-                !generateArquive
-            ) {
-                console.log("Server started");
-                setLoadingServer(false);
-                setGenerateArquive(true);
-            }
+        // ws.onmessage = (event) => {
+        //     // setLogs((prevLogs) => [...prevLogs, event.data]);
+        //     if (
+        //         event.data === "Generating information database commands" &&
+        //         !generateArquive
+        //     ) {
+        //         console.log("Server started");
+        //         setLoadingServer(false);
+        //         setGenerateArquive(true);
+        //     }
 
-            if (
-                event.data === "Generating system monitoring" &&
-                !generateArquiveMonitoring
-            ) {
-                console.log("Server started");
-                setLoadingServer(false);
-                setGenerateArquiveMonitoring(true);
-            }
-        };
+        //     if (
+        //         event.data === "Generating system monitoring" &&
+        //         !generateArquiveMonitoring
+        //     ) {
+        //         console.log("Server started");
+        //         setLoadingServer(false);
+        //         setGenerateArquiveMonitoring(true);
+        //     }
+        // };
     };
 
     // const reload = () => {
@@ -108,20 +107,23 @@ const App = () => {
     //     );
     // };
 
-    if (loadingServer) {
-        return (
-            <div>
-                <NavBar />
-                <div className="loading">Carregando...</div>
-            </div>
-        );
-    }
+
 
     return (
         <div>
             <NavBar />
             {!generateArquive && !generateArquiveMonitoring && (
                 <SetupPanel initServer={initializeServer} />
+            )}
+
+            {loadingServer && (
+                <div className="flex flex-row fixed top-0 w-full h-full pointer-events-none">
+                    <div className="h-fit sm:w-[90vw] md:w-full max-w-xl sm:max-w-lg md:max-w-2xl lg:max-w-lg py-10 px-7 mx-auto my-auto space-y-5 bg-slate-300 rounded-lg shadow-md text-center">
+                        <p className="animate-pulse text-slate-800 text-3xl font-mono">
+                            loading...
+                        </p>
+                    </div>
+                </div>
             )}
 
             {/* <TerminalController value={logs} /> */}

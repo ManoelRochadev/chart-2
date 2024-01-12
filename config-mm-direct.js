@@ -338,16 +338,16 @@ export function modifyConfigFile(config) {
         systemMonitoringTimeInterval = 10,
         overwriteSystemMonitoring = "ON",
     } = config;
-
+String.prototype.toUpperCase()
     const modifiedStringConf = stringConf
         .replace(/aof_filename = "[^"]*";/, `aof_filename = "${aofFilename}";`)
         .replace(
             /instant_recovery_state = "[^"]*";/,
-            `instant_recovery_state = "${instantRecoveryState}";`
+            `instant_recovery_state = "${instantRecoveryState.toUpperCase()}";`
         )
         .replace(
             /instant_recovery_synchronous = "[^"]*";/,
-            `instant_recovery_synchronous  = "${instantRecoverySynchronous}";`
+            `instant_recovery_synchronous  = "${instantRecoverySynchronous.toUpperCase()}";`
         )
         .replace(
             /indexedlog_structure = "[^"]*";/,
@@ -408,11 +408,11 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /checkpoint_state = "[^"]*";/,
-            `checkpoint_state = "${checkpointState}";`
+            `checkpoint_state = "${checkpointState.toUpperCase()}";`
         )
         .replace(
             /checkpoints_only_mfu = "[^"]*";/,
-            `checkpoints_only_mfu = "${checkpointsOnlyMfu}";`
+            `checkpoints_only_mfu = "${checkpointsOnlyMfu.toUpperCase()}";`
         )
         .replace(/num_mfu_tuples = [^;]*;/, `num_mfu_tuples = ${numMfuTuples};`)
         .replace(
@@ -421,7 +421,7 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /selftune_checkpoint_time_interval = "[^"]*";/,
-            `selftune_checkpoint_time_interval = "${selftuneCheckpointTimeInterval}";`
+            `selftune_checkpoint_time_interval = "${selftuneCheckpointTimeInterval.toUpperCase()}";`
         )
         .replace(
             /checkpoint_time_interval = [^;]*;/,
@@ -461,7 +461,7 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /memtier_benchmark_state = "[^"]*";/,
-            `memtier_benchmark_state = "${memtierBenchmarkState}";`
+            `memtier_benchmark_state = "${memtierBenchmarkState.toUpperCase()}";`
         )
         .replace(
             /memtier_benchmark_workload_run_times = [^;]*;/,
@@ -481,7 +481,7 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /generate_recovery_report = "[^"]*";/,
-            `generate_recovery_report = "${generateRecoveryReport}";`
+            `generate_recovery_report = "${generateRecoveryReport.toUpperCase()}";`
         )
         .replace(
             /recovery_report_filename = "[^"]*";/,
@@ -493,7 +493,7 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /generate_executed_commands_csv = "[^"]*";/,
-            `generate_executed_commands_csv = "${generateExecutedCommandsCsv}";`
+            `generate_executed_commands_csv = "${generateExecutedCommandsCsv.toUpperCase()}";`
         )
         .replace(
             /executed_commands_csv_filename = "[^"]*";/,
@@ -501,7 +501,7 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /generate_indexing_report_csv = "[^"]*";/,
-            `generate_indexing_report_csv = "${generateIndexingReportCsv}";`
+            `generate_indexing_report_csv = "${generateIndexingReportCsv.toUpperCase()}";`
         )
         .replace(
             /indexing_report_csv_filename = "[^"]*";/,
@@ -509,15 +509,15 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /overwrite_report_files = "[^"]*";/,
-            `overwrite_report_files = "${overwriteReportFiles}";`
+            `overwrite_report_files = "${overwriteReportFiles.toUpperCase()}";`
         )
         .replace(
             /system_monitoring = "[^"]*";/,
-            `system_monitoring = "${systemMonitoring}";`
+            `system_monitoring = "${systemMonitoring.toUpperCase()}";`
         )
         .replace(
             /stop_system_monitoring_end_benckmark = "[^"]*";/,
-            `stop_system_monitoring_end_benckmark = "${stopSystemMonitoringEndBenchmark}";`
+            `stop_system_monitoring_end_benckmark = "${stopSystemMonitoringEndBenchmark.toUpperCase()}";`
         )
         .replace(
             /system_monitoring_csv_filename = "[^"]*";/,
@@ -529,7 +529,7 @@ export function modifyConfigFile(config) {
         )
         .replace(
             /overwrite_system_monitoring = "[^"]*";/,
-            `overwrite_system_monitoring = "${overwriteSystemMonitoring}";`
+            `overwrite_system_monitoring = "${overwriteSystemMonitoring.toUpperCase()}";`
         );
 
     fs.writeFile(

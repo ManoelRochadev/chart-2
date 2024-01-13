@@ -1,10 +1,8 @@
 import { useState } from "react";
 import NavBar from "./componentes/NavBar";
-//import CpuChart from "./componentes/CpuChart";
-// import TransferChart from "./componentes/TransferChart";
 import SetupPanel from "./componentes/Form/SetupPanel";
+import ChartBoard from "./componentes/Charts/ChartBoard";
 // import CpuChart from "./componentes/CpuChart";
-// import ReloadButton from "./componentes/ReloadButton";
 // import { TerminalController } from "./componentes/Terminal";
 
 // type NavBarProps = {
@@ -12,13 +10,13 @@ import SetupPanel from "./componentes/Form/SetupPanel";
 // };
 
 const App = () => {
-    const [generateArquive, setGenerateArquive] = useState<boolean>(false);
     const [loadingServer, setLoadingServer] = useState<boolean>(false);
+    const [experiment, setExperiment] = useState<boolean>(false);
+    const [generateArquive, setGenerateArquive] = useState<boolean>(false);
     const [generateArquiveMonitoring, setGenerateArquiveMonitoring] =
         useState<boolean>(false);
-    // const [showTerminal, setShowTerminal] = useState<boolean>(false);
-    // const [showInsights, setShowInsights] = useState<boolean>(true);
-    // const [logs, setLogs] = useState<string[]>([]);
+
+    const [logs, setLogs] = useState<string[]>([]);
     // const [buttonSelected, setButtonSelected] = useState<string>("Insights");
 
     // const handleButtonClick = (buttonName: string) => {
@@ -30,22 +28,26 @@ const App = () => {
     //     return new Promise<void>((resolve) => setTimeout(resolve, time));
     // };
 
-    const initializeServer = (params: Array<string>) => {
+    const initializeServer = () => {
         console.log("Iniciando servidor");
 
         setLoadingServer(true);
 
-        const url: string =
-            params.includes("graph-cpu") && params.includes("graph-transf")
-                ? "teste_start"
-                : params.includes("graph-cpu")
-                    ? "teste_cpu"
-                    : "teste_data";
+        const url = "teste_start";
+
+        // const url: string =
+        //     params.includes("graph-cpu") && params.includes("graph-transf")
+        //         ? "teste_start"
+        //         : params.includes("graph-cpu")
+        //             ? "teste_cpu"
+        //             : "teste_data";
 
         const ws = new WebSocket(`ws://localhost:8081/${url}`);
 
         ws.onmessage = (event) => {
-            // setLogs((prevLogs) => [...prevLogs, event.data]);
+            console.log(event.data);
+            setExperiment(true);
+            setLogs((prevLogs) => [...prevLogs, event.data]);
             if (
                 event.data === "Generating information database commands" &&
                 !generateArquive
@@ -66,16 +68,12 @@ const App = () => {
         };
     };
 
-    // const reload = () => {
-    //     setLoadingServer(true);
-    //     // setLogs([]);
-
-    //     delay(1000).then(() => {
-    //         setLoadingServer(false);
-    //         setGenerateArquive(false);
-    //         setGenerateArquiveMonitoring(false);
-    //     });
-    // };
+    const onReloadButtuonClick = () => {
+        setExperiment(false)
+        setLogs([]);
+        setGenerateArquive(false);
+        setGenerateArquiveMonitoring(false);
+    };
 
     // const NavButtons: React.FC<NavBarProps> = ({ onButtonClick }) => {
     //     return (
@@ -108,20 +106,23 @@ const App = () => {
     //     );
     // };
 
-    if (loadingServer) {
-        return (
-            <div>
-                <NavBar />
-                <div className="loading">Carregando...</div>
-            </div>
-        );
-    }
-
     return (
         <div>
             <NavBar />
+
             {!generateArquive && !generateArquiveMonitoring && (
                 <SetupPanel initServer={initializeServer} />
+            )}
+
+            {loadingServer && <div className="loading"></div>}
+
+            {experiment && (
+                <ChartBoard
+                    cpuChart={generateArquiveMonitoring}
+                    transferChart={generateArquive}
+                    terminalLog={logs}
+                    onReloadButtonClick={onReloadButtuonClick}
+                />
             )}
 
             {/* <TerminalController value={logs} /> */}

@@ -68,16 +68,15 @@ const CpuChart = () => {
     };
 
     return (
-        <div className="container chart-container chart-container-cpu mt-2">
-            <div className="row justify-content-center text-center">
-                <h2>Uso de CPU</h2>
+        <div className="mx-auto w-full text-center py-3 bg-white rounded ">
+                <h2 className="text-xl font-semibold">Uso de CPU</h2>
                 <Chart
                     chartType="LineChart"
                     options={chartOptions}
                     data={chartData}
+                    width="100%"
                     legendToggle
                 />
-            </div>
         </div>
     );
 };

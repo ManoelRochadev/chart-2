@@ -57,15 +57,14 @@ const TransferChart = () => {
             title: "Transitions",
             viewWindow: {
                 min: 0,
-                max: 60000,
+                max: 40000,
             },
         },
     };
 
     return (
-        <div className="container chart-container chart-container mt-2">
-            <div className="row justify-content-center text-center">
-                <h2>Transições</h2>
+            <div className="mx-auto w-full text-center py-3 bg-white rounded ">
+                <h2 className="text-xl font-semibold">Transações</h2>
                 <Chart
                     chartType="LineChart"
                     options={chartOptions}
@@ -73,7 +72,6 @@ const TransferChart = () => {
                     legendToggle
                 />
             </div>
-        </div>
     );
 };
 

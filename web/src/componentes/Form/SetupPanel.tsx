@@ -21,6 +21,7 @@ const SetupPanel = ({ initServer }:any) => {
         });
 
         postRequest.then((resp: any) => {
+            console.log(resp)
             initServer()
         })
     }

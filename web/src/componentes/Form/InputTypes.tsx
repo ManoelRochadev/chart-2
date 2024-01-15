@@ -48,12 +48,13 @@ export const CheckboxInput = ({ CheckboxName, isDisable, children }: any) => {
 
 export const SwitchInput = ({
     SwitchName,
+    extendedStyle = "",
+    onSwitchCheck,
     isDisable,
     children,
 }: any) => {
-    const [enableBoardButton, setEnableBoardButton] = useState<boolean>(true);
     return (
-        <div className="w-full">
+        <div className={extendedStyle ? extendedStyle : "w-full"}>
             <label
                 htmlFor={`switch-${SwitchName}`}
                 className="font-semibold align-middle text-sm md:text-lg"
@@ -63,14 +64,12 @@ export const SwitchInput = ({
                     className="toggle -mr-2 mb-7"
                     name={SwitchName}
                     id={`switch-${SwitchName}`}
-                    onClick={() => {
-                        setEnableBoardButton(!enableBoardButton);
-                    }}
+                    onClick={onSwitchCheck}
                     disabled={isDisable}
                 />
                 {children}
             </label>
-        </div>
+        </div >
     );
 };
 
@@ -101,7 +100,7 @@ export const RangeInput = ({
                     max={RangeMax}
                     step={
                         RangeSteps & (RangeMin & RangeMax) &&
-                        RangeSteps < RangeMax
+                            RangeSteps < RangeMax
                             ? RangeSteps
                             : 1
                     }

@@ -1,6 +1,6 @@
 import OptionsBoard from "./OptionsBoard";
 import { TextInput, SwitchInput, RangeInput } from "./InputTypes";
-import ResetButton from "./ResetButton";
+import ResetButton from "./ResetFormButton";
 import StartButton from "./StartButton";
 
 const SetupForm = ({ submitFunction, resetFunction }: any) => {

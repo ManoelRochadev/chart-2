@@ -42,11 +42,9 @@ const App = () => {
       if (event.data === "Generating system monitoring") {
         console.log("Server started");
         setLoadingServer(false);
-        const interval = setInterval(() => {
-          setGenerateArquiveMonitoring(true);
-        }, 300);
+        setGenerateArquiveMonitoring(true);
 
-        return () => clearInterval(interval);
+        return
       }
     };
   };
@@ -60,7 +58,7 @@ const App = () => {
             setShowInsights(true);
             setShowTerminal(false);
           }}
-          >
+        >
           Insights
         </button>
         <button
@@ -70,7 +68,7 @@ const App = () => {
             setShowTerminal(true);
             setShowInsights(false);
           }}
-          >
+        >
           Runtime Logs
         </button>
       </div>
@@ -109,24 +107,24 @@ const App = () => {
       }
 
       {
-         generateArquive && (
+        generateArquive && (
           <div
             className={`chart-container ${showInsights ? '' : 'item-hidden'}`}
           >
             <TransferChart />
             {
               generateArquiveMonitoring ? <>
-              <CpuChart />
-              <MemoryChart />
+                <CpuChart />
+                <MemoryChart />
               </> : (
                 <>
                 </>
               )
             }
-            
+
           </div>
         )
-        
+
       }
 
       {

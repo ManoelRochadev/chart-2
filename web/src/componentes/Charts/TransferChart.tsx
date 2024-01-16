@@ -15,7 +15,7 @@ const TransferChart = () => {
 
                     const message = JSON.parse(event.data);
                     setInfo((prevInfo) => [...prevInfo, message]);
-                    
+
                 }
                 if (event.data === endMessage) {
                     ws.close();
@@ -35,7 +35,14 @@ const TransferChart = () => {
     }, []);
 
     if (info.length === 0) {
-        return <div className="loading">Loading...</div>;
+        return (
+            <div className="flex flex-row top-0 w-full h-full pointer-events-none">
+                <div className="h-fit sm:w-[90vw] md:w-full max-w-xl sm:max-w-lg md:max-w-2xl lg:max-w-lg py-10 px-7 mx-auto my-auto space-y-5 bg-slate-300 rounded-lg shadow-md text-center">
+                    <p className="animate-pulse text-slate-800 text-lg font-mono">
+                        loading...
+                    </p>
+                </div>
+            </div>);
     }
 
     const chartData = [["Timestamp", "Transitions", { role: "style" }], ...info.map((item) => [
@@ -59,23 +66,21 @@ const TransferChart = () => {
             title: "Transitions",
             viewWindow: {
                 min: 0,
-                max: 60000,
+                max: 40000,
             },
         },
         pointSize: 1,
     };
 
     return (
-        <div className="container chart-container chart-container mt-2">
-            <div className="row justify-content-center text-center">
-                <h2>Transições</h2>
-                <Chart
-                    chartType="LineChart"
-                    options={chartOptions}
-                    data={chartData}
-                    legendToggle
-                />
-            </div>
+        <div className="mx-auto w-full text-center py-3 bg-white rounded">
+            <h2 className="text-xl font-semibold">Transações</h2>
+            <Chart
+                chartType="LineChart"
+                options={chartOptions}
+                data={chartData}
+                legendToggle
+            />
         </div>
     );
 };

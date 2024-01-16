@@ -48,13 +48,12 @@ export const CheckboxInput = ({ CheckboxName, isDisable, children }: any) => {
 
 export const SwitchInput = ({
     SwitchName,
-    extendedStyle = "",
     onSwitchCheck,
     isDisable,
     children,
 }: any) => {
     return (
-        <div className={extendedStyle ? extendedStyle : "w-full"}>
+        <div className="w-full">
             <label
                 htmlFor={`switch-${SwitchName}`}
                 className="font-semibold align-middle text-sm md:text-lg"

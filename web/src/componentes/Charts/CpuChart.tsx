@@ -41,7 +41,7 @@ const CpuChart = () => {
         ws.onclose = () => {
             console.log("Connection closed");
         };
-       
+
         // return () => {
         //     ws.close()
         // }

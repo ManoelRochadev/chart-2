@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-
 const MemoryChart = () => {
   const [data, setData] = useState<[number, number][]>([]);
   // variável para armazenar o timestamp da última atualização
@@ -21,9 +20,15 @@ const MemoryChart = () => {
         timestamps.push(message[0]);
         // transforma o valor de bytes para megabytes
         memoryUsage.push(message[1] / 1024);
-        if (timestamps.length > 1 && timestamps[timestamps.length - 1] === timestamps[timestamps.length - 2]) {
-
-          const media = (memoryUsage[memoryUsage.length - 1] + memoryUsage[memoryUsage.length - 2]) / 2;
+        if (
+          timestamps.length > 1 &&
+          timestamps[timestamps.length - 1] ===
+          timestamps[timestamps.length - 2]
+        ) {
+          const media =
+            (memoryUsage[memoryUsage.length - 1] +
+              memoryUsage[memoryUsage.length - 2]) /
+            2;
 
           setData((dadosAnteriores) => {
             const novosDados = [...dadosAnteriores];
@@ -39,17 +44,16 @@ const MemoryChart = () => {
           // Se os timestamps forem diferentes, adiciona simplesmente o novo ponto de dados
 
           setData((dadosAnteriores) => {
-
             // verifica se o novo valor é maior que o maior valor de memória usado
             if (message[1] > maxMemoryUsage) {
               setMaxMemoryUsage(message[1]);
             }
-            return [...dadosAnteriores, [message[0], message[1] / 1024]];
+            return [
+              ...dadosAnteriores,
+              [message[0], message[1] / 1024],
+            ];
           });
-          
         }
-
-
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
@@ -70,7 +74,6 @@ const MemoryChart = () => {
     chart: {
       title: "Memory Usage",
       subtitle: "in %",
-
     },
     hAxis: {
       title: "Time",
@@ -82,20 +85,17 @@ const MemoryChart = () => {
         max: maxMemoryUsage + 10,
       },
     },
-
   };
 
   return (
-    <div className="container chart-container chart-container-cpu mt-2">
-      <div className="row justify-content-center text-center">
-        <h2>Uso de Memória</h2>
-        <Chart
-          chartType="LineChart"
-          options={chartOptions}
-          data={chartData}
-          legendToggle
-        />
-      </div>
+    <div className="mx-auto w-full text-center py-3 bg-white rounded ">
+      <h2>Uso de Memória</h2>
+      <Chart
+        chartType="LineChart"
+        options={chartOptions}
+        data={chartData}
+        legendToggle
+      />
     </div>
   );
 };

@@ -48,10 +48,10 @@ const TransferChart = () => {
     const chartData = [["Timestamp", "Transitions", { role: "style" }], ...info.map((item) => [
         item[0],
         item[1],
-        item[1] < 500 
-          ? "point { size: 6; fill-color: #a52714; }"
-          : null,
-      ])
+        item[1] < 500
+            ? "point { size: 6; fill-color: #a52714; }"
+            : null,
+    ])
     ]
 
     const chartOptions = {

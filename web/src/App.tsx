@@ -6,6 +6,7 @@ import FormController from "./componentes/FormController";
 import CpuChart from "./componentes/CpuChart";
 import ReloadButton from "./componentes/ReloadButton";
 import { TerminalController } from "./componentes/Terminal";
+import MemoryChart from "./componentes/MemoryChart";
 type NavBarProps = {
     onButtonClick: (buttonName: string) => void;
 };
@@ -54,27 +55,15 @@ const App = () => {
                 setGenerateArquive(true);
             }
 
-            if (
-                event.data === "Generating system monitoring" &&
-                !generateArquiveMonitoring
-            ) {
-                console.log("Server started");
-                setLoadingServer(false);
-                setGenerateArquiveMonitoring(true);
-            }
-        };
-    };
+      if (event.data === "Generating system monitoring") {
+        console.log("Server started");
+        setLoadingServer(false);
+        setGenerateArquiveMonitoring(true);
 
-    const reload = () => {
-        setLoadingServer(true);
-        setLogs([])
-
-        delay(1000).then(() => {
-            setLoadingServer(false);
-            setGenerateArquive(false);
-            setGenerateArquiveMonitoring(false);
-        });
+        return
+      }
     };
+  };
 
     const NavButtons: React.FC<NavBarProps> = ({ onButtonClick }) => {
         return (
@@ -119,21 +108,36 @@ const App = () => {
             <NavBar />
             {!generateArquive && !generateArquiveMonitoring && (
                 <FormController initServer={initializeServer} />
-            )}
+              </div>
+            </div>
+          </div>
+        </div>
+      }
 
-            {generateArquive && (
-                <NavButtons onButtonClick={handleButtonClick} />
-            )}
+      {
+        generateArquive && <NavButtons onButtonClick={handleButtonClick} />
+      }
 
-            {generateArquive && (
-                <div
-                    className={`chart-container ${showInsights ? "" : "item-hidden"
-                        }`}
-                >
-                    <TransferChart />
-                    {generateArquiveMonitoring && <CpuChart />}
-                </div>
-            )}
+      {
+        generateArquive && (
+          <div
+            className={`chart-container ${showInsights ? '' : 'item-hidden'}`}
+          >
+            <TransferChart />
+            {
+              generateArquiveMonitoring ? <>
+                <CpuChart />
+                <MemoryChart />
+              </> : (
+                <>
+                </>
+              )
+            }
+
+          </div>
+        )
+
+      }
 
             {generateArquive && (
                 <div

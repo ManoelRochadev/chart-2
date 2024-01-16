@@ -49,7 +49,6 @@ const CpuChart = () => {
 
     const chartData = [["Timestamp", "CPU Usage"], ...data];
 
-
     const chartOptions = {
         chart: {
             title: "CPU Usage",

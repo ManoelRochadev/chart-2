@@ -82,7 +82,7 @@ const MemoryChart = () => {
       title: "Memory Usage",
       viewWindow: {
         min: 0,
-        max: maxMemoryUsage + 10,
+        max: 100,
       },
     },
   };
@@ -94,6 +94,7 @@ const MemoryChart = () => {
         chartType="LineChart"
         options={chartOptions}
         data={chartData}
+        width="100%"
         legendToggle
       />
     </div>

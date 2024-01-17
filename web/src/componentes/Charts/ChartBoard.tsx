@@ -33,7 +33,7 @@ const ChartBoard = ({
                     <div className={`${showInsights || 'hidden'}`}>
                         {transferChart && <TransferChart />}
                     </div>
-                    <div className={` ${showInsights || 'hidden'}`}>
+                    <div className={`col-span-full  ${showInsights || 'hidden'}`}>
                         {transferChart && <MemoryChart />}
                     </div>
                     {!showInsights &&

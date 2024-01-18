@@ -1,7 +1,6 @@
-import fs from 'fs';
+import fs from "fs";
 
-const stringConf = 
-`/////////////////////////////////////////////////////////////////////////////////////////
+const stringConf = `/////////////////////////////////////////////////////////////////////////////////////////
 //		Redis Instant Recovery (RedisIR) configurations file
 //	Below are the parameters for executing RedisIR and a brief explanation of its functions. 
 //
@@ -287,111 +286,258 @@ overwrite_system_monitoring = "ON";  //ON | OFF
 
 // função para modificar o arquivo de configuração redis_ir.conf
 export function modifyConfigFile(config) {
-  const {
-    aofFilename = "logs/sequentialLog.aof",
-    instantRecoveryState = "ON",
-    indexedlogStructure = "BTREE",
-    synchronousLogging = "OFF",
-    indexedlogFilename = "logs/indexedLog.db",
-    startsLogIndexing = "A",
-    indexerTimeInterval = 500,
-    displayIndexerInformation = "OFF",
-    indexerInformationTimeInteraval = 60,
-    redisHostname = "127.0.0.1",
-    redisPort = 6379,
-    displayRestorerInformation = "OFF",
-    restorerInformationTimeInteraval = 60,
-    indexedlogReplicated = "OFF",
-    indexedlogReplicatedFilename = "logs/indexedLog_rep.db",
-    logCorruption = 0,
-    rebuildIndexedlog = "ON",
-    checkpointState = "OFF",
-    checkpointsOnlyMfu = "OFF",
-    numMfuTuples = 0,
-    numberCheckpoints = 0,
-    selftuneCheckpointTimeInterval = "OFF",
-    checkpointTimeInterval = 60,
-    firstCheckpointStartTime = 0,
-    stopCheckpointAfterBenchmark = "ON",
-    displayCheckpointInformation = "OFF",
-    restartDaleyTime = 1,
-    restartAfterTime = 200,
-    numberRestartsAfterTime = 0,
-    preloadDatabaseAndRestart = 0,
-    numberRestartsAfterPreloading = 1,
-    memtierBenchmarkState = "OFF",
-    memtierBenchmarkWorkloadRunTimes = 1,
-    restartAfterBenchmarking = 0,
-    timeTostopBenchmarking = 0,
-    memtierBenchmarkParameters = "--hide-histogram -n 5000 --key-prefix='redisIR-' --key-minimum=1 --key-maximum=5000 --command='set  __key__ __data__' --command-ratio=5000 --command-key-pattern=S",
-    generateRecoveryReport = "OFF",
-    recoveryReportFilename = "recovery_report/recovery_report.txt",
-    generateReportFileAfterBenchmarking = "ON",
-    generateExecutedCommandsCsv = "OFF",
-    executedCommandsCsvFilename = "datasets/datasets.csv",
-    generateIndexingReportCsv = "OFF",
-    indexingReportCsvFilename = "indexing_report/indexing.csv",
-    overwriteReportFiles = "ON",
-    systemMonitoring = "OFF",
-    stopSystemMonitoringEndBenchmark = "ON",
-    systemMonitoringCsvFilename = "system_monitoring/system_monitoring.csv",
-    systemMonitoringTimeInterval = 10,
-    overwriteSystemMonitoring = "ON"
-  } = config;
+    const {
+        aofFilename = "logs/sequentialLog.aof",
+        instantRecoveryState = "ON",
+        instantRecoverySynchronous = "OFF",
+        indexedlogStructure = "BTREE",
+        synchronousLogging = "OFF",
+        indexedlogFilename = "logs/indexedLog.db",
+        startsLogIndexing = "A",
+        indexerTimeInterval = 500,
+        displayIndexerInformation = "OFF",
+        indexerInformationTimeInteraval = 60,
+        redisHostname = "127.0.0.1",
+        redisPort = 6379,
+        displayRestorerInformation = "OFF",
+        restorerInformationTimeInteraval = 60,
+        indexedlogReplicated = "OFF",
+        indexedlogReplicatedFilename = "logs/indexedLog_rep.db",
+        logCorruption = 0,
+        rebuildIndexedlog = "ON",
+        checkpointState = "OFF",
+        checkpointsOnlyMfu = "OFF",
+        numMfuTuples = 0,
+        numberCheckpoints = 0,
+        selftuneCheckpointTimeInterval = "OFF",
+        checkpointTimeInterval = 60,
+        firstCheckpointStartTime = 0,
+        stopCheckpointAfterBenchmark = "ON",
+        displayCheckpointInformation = "OFF",
+        restartDaleyTime = 1,
+        restartAfterTime = 200,
+        numberRestartsAfterTime = 0,
+        preloadDatabaseAndRestart = 0,
+        numberRestartsAfterPreloading = 1,
+        memtierBenchmarkState = "OFF",
+        memtierBenchmarkWorkloadRunTimes = 1,
+        restartAfterBenchmarking = 0,
+        timeTostopBenchmarking = 0,
+        memtierBenchmarkParameters = "--hide-histogram -n 5000 --key-prefix='redisIR-' --key-minimum=1 --key-maximum=5000 --command='set  __key__ __data__' --command-ratio=5000 --command-key-pattern=S",
+        generateRecoveryReport = "OFF",
+        recoveryReportFilename = "recovery_report/recovery_report.txt",
+        generateReportFileAfterBenchmarking = "ON",
+        generateExecutedCommandsCsv = "OFF",
+        executedCommandsCsvFilename = "datasets/datasets.csv",
+        generateIndexingReportCsv = "OFF",
+        indexingReportCsvFilename = "indexing_report/indexing.csv",
+        overwriteReportFiles = "ON",
+        systemMonitoring = "OFF",
+        stopSystemMonitoringEndBenchmark = "ON",
+        systemMonitoringCsvFilename = "system_monitoring/system_monitoring.csv",
+        systemMonitoringTimeInterval = 10,
+        overwriteSystemMonitoring = "ON",
+    } = config;
+String.prototype.toUpperCase()
+    const modifiedStringConf = stringConf
+        .replace(/aof_filename = "[^"]*";/, `aof_filename = "${aofFilename}";`)
+        .replace(
+            /instant_recovery_state = "[^"]*";/,
+            `instant_recovery_state = "${instantRecoveryState.toUpperCase()}";`
+        )
+        .replace(
+            /instant_recovery_synchronous = "[^"]*";/,
+            `instant_recovery_synchronous  = "${instantRecoverySynchronous.toUpperCase()}";`
+        )
+        .replace(
+            /indexedlog_structure = "[^"]*";/,
+            `indexedlog_structure = "${indexedlogStructure}";`
+        )
+        .replace(
+            /instant_recovery_synchronous = "[^"]*";/,
+            `instant_recovery_synchronous = "${synchronousLogging}";`
+        )
+        .replace(
+            /indexedlog_filename = "[^"]*";/,
+            `indexedlog_filename = "${indexedlogFilename}";`
+        )
+        .replace(
+            /starts_log_indexing = "[^"]*";/,
+            `starts_log_indexing = "${startsLogIndexing}";`
+        )
+        .replace(
+            /indexer_time_interval = [^;]*;/,
+            `indexer_time_interval = ${indexerTimeInterval};`
+        )
+        .replace(
+            /display_indexer_information = "[^"]*";/,
+            `display_indexer_information = "${displayIndexerInformation}";`
+        )
+        .replace(
+            /indexer_information_time_interaval = [^;]*;/,
+            `indexer_information_time_interaval = ${indexerInformationTimeInteraval};`
+        )
+        .replace(
+            /redisHostname = "[^"]*";/,
+            `redisHostname = "${redisHostname}";`
+        )
+        .replace(/redisPort = [^;]*;/, `redisPort = ${redisPort};`)
+        .replace(
+            /display_restorer_information = "[^"]*";/,
+            `display_restorer_information = "${displayRestorerInformation}";`
+        )
+        .replace(
+            /restorer_information_time_interaval = [^;]*;/,
+            `restorer_information_time_interaval = ${restorerInformationTimeInteraval};`
+        )
+        .replace(
+            /indexedlog_replicated = "[^"]*";/,
+            `indexedlog_replicated = "${indexedlogReplicated}";`
+        )
+        .replace(
+            /indexedlog_replicated_filename = "[^"]*";/,
+            `indexedlog_replicated_filename = "${indexedlogReplicatedFilename}";`
+        )
+        .replace(
+            /log_corruption = [^;]*;/,
+            `log_corruption = ${logCorruption};`
+        )
+        .replace(
+            /rebuild_indexedlog = "[^"]*";/,
+            `rebuild_indexedlog = "${rebuildIndexedlog}";`
+        )
+        .replace(
+            /checkpoint_state = "[^"]*";/,
+            `checkpoint_state = "${checkpointState.toUpperCase()}";`
+        )
+        .replace(
+            /checkpoints_only_mfu = "[^"]*";/,
+            `checkpoints_only_mfu = "${checkpointsOnlyMfu.toUpperCase()}";`
+        )
+        .replace(/num_mfu_tuples = [^;]*;/, `num_mfu_tuples = ${numMfuTuples};`)
+        .replace(
+            /number_checkpoints = [^;]*;/,
+            `number_checkpoints = ${numberCheckpoints};`
+        )
+        .replace(
+            /selftune_checkpoint_time_interval = "[^"]*";/,
+            `selftune_checkpoint_time_interval = "${selftuneCheckpointTimeInterval.toUpperCase()}";`
+        )
+        .replace(
+            /checkpoint_time_interval = [^;]*;/,
+            `checkpoint_time_interval = ${checkpointTimeInterval};`
+        )
+        .replace(
+            /first_checkpoint_start_time = [^;]*;/,
+            `first_checkpoint_start_time = ${firstCheckpointStartTime};`
+        )
+        .replace(
+            /stop_checkpoint_after_benchmark = "[^"]*";/,
+            `stop_checkpoint_after_benchmark = "${stopCheckpointAfterBenchmark}";`
+        )
+        .replace(
+            /display_checkpoint_information = "[^"]*";/,
+            `display_checkpoint_information = "${displayCheckpointInformation}";`
+        )
+        .replace(
+            /restart_daley_time = [^;]*;/,
+            `restart_daley_time = ${restartDaleyTime};`
+        )
+        .replace(
+            /restart_after_time = [^;]*;/,
+            `restart_after_time = ${restartAfterTime};`
+        )
+        .replace(
+            /number_restarts_after_time = [^;]*;/,
+            `number_restarts_after_time = ${numberRestartsAfterTime};`
+        )
+        .replace(
+            /preload_database_and_restart = [^;]*;/,
+            `preload_database_and_restart = ${preloadDatabaseAndRestart};`
+        )
+        .replace(
+            /number_restarts_after_preloading = [^;]*;/,
+            `number_restarts_after_preloading = ${numberRestartsAfterPreloading};`
+        )
+        .replace(
+            /memtier_benchmark_state = "[^"]*";/,
+            `memtier_benchmark_state = "${memtierBenchmarkState.toUpperCase()}";`
+        )
+        .replace(
+            /memtier_benchmark_workload_run_times = [^;]*;/,
+            `memtier_benchmark_workload_run_times = ${memtierBenchmarkWorkloadRunTimes};`
+        )
+        .replace(
+            /restart_after_bechmarking = [^;]*;/,
+            `restart_after_bechmarking = ${restartAfterBenchmarking};`
+        )
+        .replace(
+            /time_tostop_benchmarking = [^;]*;/,
+            `time_tostop_benchmarking = ${timeTostopBenchmarking};`
+        )
+        .replace(
+            /memtier_benchmark_parameters = "[^"]*";/,
+            `memtier_benchmark_parameters = "${memtierBenchmarkParameters}";`
+        )
+        .replace(
+            /generate_recovery_report = "[^"]*";/,
+            `generate_recovery_report = "${generateRecoveryReport.toUpperCase()}";`
+        )
+        .replace(
+            /recovery_report_filename = "[^"]*";/,
+            `recovery_report_filename = "${recoveryReportFilename}";`
+        )
+        .replace(
+            /generate_report_file_after_benchmarking = "[^"]*";/,
+            `generate_report_file_after_benchmarking = "${generateReportFileAfterBenchmarking}";`
+        )
+        .replace(
+            /generate_executed_commands_csv = "[^"]*";/,
+            `generate_executed_commands_csv = "${generateExecutedCommandsCsv.toUpperCase()}";`
+        )
+        .replace(
+            /executed_commands_csv_filename = "[^"]*";/,
+            `executed_commands_csv_filename = "${executedCommandsCsvFilename}";`
+        )
+        .replace(
+            /generate_indexing_report_csv = "[^"]*";/,
+            `generate_indexing_report_csv = "${generateIndexingReportCsv.toUpperCase()}";`
+        )
+        .replace(
+            /indexing_report_csv_filename = "[^"]*";/,
+            `indexing_report_csv_filename = "${indexingReportCsvFilename}";`
+        )
+        .replace(
+            /overwrite_report_files = "[^"]*";/,
+            `overwrite_report_files = "${overwriteReportFiles.toUpperCase()}";`
+        )
+        .replace(
+            /system_monitoring = "[^"]*";/,
+            `system_monitoring = "${systemMonitoring.toUpperCase()}";`
+        )
+        .replace(
+            /stop_system_monitoring_end_benckmark = "[^"]*";/,
+            `stop_system_monitoring_end_benckmark = "${stopSystemMonitoringEndBenchmark.toUpperCase()}";`
+        )
+        .replace(
+            /system_monitoring_csv_filename = "[^"]*";/,
+            `system_monitoring_csv_filename = "${systemMonitoringCsvFilename}";`
+        )
+        .replace(
+            /system_monitoring_time_interval = [^;]*;/,
+            `system_monitoring_time_interval = ${systemMonitoringTimeInterval};`
+        )
+        .replace(
+            /overwrite_system_monitoring = "[^"]*";/,
+            `overwrite_system_monitoring = "${overwriteSystemMonitoring.toUpperCase()}";`
+        );
 
-  const modifiedStringConf = stringConf
-    .replace(/aof_filename = "[^"]*";/, `aof_filename = "${aofFilename}";`)
-    .replace(/instant_recovery_state = "[^"]*";/, `instant_recovery_state = "${instantRecoveryState}";`)
-    .replace(/indexedlog_structure = "[^"]*";/, `indexedlog_structure = "${indexedlogStructure}";`)
-    .replace(/instant_recovery_synchronous = "[^"]*";/, `instant_recovery_synchronous = "${synchronousLogging}";`)
-    .replace(/indexedlog_filename = "[^"]*";/, `indexedlog_filename = "${indexedlogFilename}";`)
-    .replace(/starts_log_indexing = "[^"]*";/, `starts_log_indexing = "${startsLogIndexing}";`)
-    .replace(/indexer_time_interval = [^;]*;/, `indexer_time_interval = ${indexerTimeInterval};`)
-    .replace(/display_indexer_information = "[^"]*";/, `display_indexer_information = "${displayIndexerInformation}";`)
-    .replace(/indexer_information_time_interaval = [^;]*;/, `indexer_information_time_interaval = ${indexerInformationTimeInteraval};`)
-    .replace(/redisHostname = "[^"]*";/, `redisHostname = "${redisHostname}";`)
-    .replace(/redisPort = [^;]*;/, `redisPort = ${redisPort};`)
-    .replace(/display_restorer_information = "[^"]*";/, `display_restorer_information = "${displayRestorerInformation}";`)
-    .replace(/restorer_information_time_interaval = [^;]*;/, `restorer_information_time_interaval = ${restorerInformationTimeInteraval};`)
-    .replace(/indexedlog_replicated = "[^"]*";/, `indexedlog_replicated = "${indexedlogReplicated}";`)
-    .replace(/indexedlog_replicated_filename = "[^"]*";/, `indexedlog_replicated_filename = "${indexedlogReplicatedFilename}";`)
-    .replace(/log_corruption = [^;]*;/, `log_corruption = ${logCorruption};`)
-    .replace(/rebuild_indexedlog = "[^"]*";/, `rebuild_indexedlog = "${rebuildIndexedlog}";`)
-    .replace(/checkpoint_state = "[^"]*";/, `checkpoint_state = "${checkpointState}";`)
-    .replace(/checkpoints_only_mfu = "[^"]*";/, `checkpoints_only_mfu = "${checkpointsOnlyMfu}";`)
-    .replace(/num_mfu_tuples = [^;]*;/, `num_mfu_tuples = ${numMfuTuples};`)
-    .replace(/number_checkpoints = [^;]*;/, `number_checkpoints = ${numberCheckpoints};`)
-    .replace(/selftune_checkpoint_time_interval = "[^"]*";/, `selftune_checkpoint_time_interval = "${selftuneCheckpointTimeInterval}";`)
-    .replace(/checkpoint_time_interval = [^;]*;/, `checkpoint_time_interval = ${checkpointTimeInterval};`)
-    .replace(/first_checkpoint_start_time = [^;]*;/, `first_checkpoint_start_time = ${firstCheckpointStartTime};`)
-    .replace(/stop_checkpoint_after_benchmark = "[^"]*";/, `stop_checkpoint_after_benchmark = "${stopCheckpointAfterBenchmark}";`)
-    .replace(/display_checkpoint_information = "[^"]*";/, `display_checkpoint_information = "${displayCheckpointInformation}";`)
-    .replace(/restart_daley_time = [^;]*;/, `restart_daley_time = ${restartDaleyTime};`)
-    .replace(/restart_after_time = [^;]*;/, `restart_after_time = ${restartAfterTime};`)
-    .replace(/number_restarts_after_time = [^;]*;/, `number_restarts_after_time = ${numberRestartsAfterTime};`)
-    .replace(/preload_database_and_restart = [^;]*;/, `preload_database_and_restart = ${preloadDatabaseAndRestart};`)
-    .replace(/number_restarts_after_preloading = [^;]*;/, `number_restarts_after_preloading = ${numberRestartsAfterPreloading};`)
-    .replace(/memtier_benchmark_state = "[^"]*";/, `memtier_benchmark_state = "${memtierBenchmarkState}";`)
-    .replace(/memtier_benchmark_workload_run_times = [^;]*;/, `memtier_benchmark_workload_run_times = ${memtierBenchmarkWorkloadRunTimes};`)
-    .replace(/restart_after_bechmarking = [^;]*;/, `restart_after_bechmarking = ${restartAfterBenchmarking};`)
-    .replace(/time_tostop_benchmarking = [^;]*;/, `time_tostop_benchmarking = ${timeTostopBenchmarking};`)
-    .replace(/memtier_benchmark_parameters = "[^"]*";/, `memtier_benchmark_parameters = "${memtierBenchmarkParameters}";`)
-    .replace(/generate_recovery_report = "[^"]*";/, `generate_recovery_report = "${generateRecoveryReport}";`)
-    .replace(/recovery_report_filename = "[^"]*";/, `recovery_report_filename = "${recoveryReportFilename}";`)
-    .replace(/generate_report_file_after_benchmarking = "[^"]*";/, `generate_report_file_after_benchmarking = "${generateReportFileAfterBenchmarking}";`)
-    .replace(/generate_executed_commands_csv = "[^"]*";/, `generate_executed_commands_csv = "${generateExecutedCommandsCsv}";`)
-    .replace(/executed_commands_csv_filename = "[^"]*";/, `executed_commands_csv_filename = "${executedCommandsCsvFilename}";`)
-    .replace(/generate_indexing_report_csv = "[^"]*";/, `generate_indexing_report_csv = "${generateIndexingReportCsv}";`)
-    .replace(/indexing_report_csv_filename = "[^"]*";/, `indexing_report_csv_filename = "${indexingReportCsvFilename}";`)
-    .replace(/overwrite_report_files = "[^"]*";/, `overwrite_report_files = "${overwriteReportFiles}";`)
-    .replace(/system_monitoring = "[^"]*";/, `system_monitoring = "${systemMonitoring}";`)
-    .replace(/stop_system_monitoring_end_benckmark = "[^"]*";/, `stop_system_monitoring_end_benckmark = "${stopSystemMonitoringEndBenchmark}";`)
-    .replace(/system_monitoring_csv_filename = "[^"]*";/, `system_monitoring_csv_filename = "${systemMonitoringCsvFilename}";`)
-    .replace(/system_monitoring_time_interval = [^;]*;/, `system_monitoring_time_interval = ${systemMonitoringTimeInterval};`)
-    .replace(/overwrite_system_monitoring = "[^"]*";/, `overwrite_system_monitoring = "${overwriteSystemMonitoring}";`);
-
-  fs.writeFile('../MM-DIRECT/redis_ir.conf', modifiedStringConf, function (err) {
-    if (err) throw err;
-    console.log('Configuração modificada e salva!');
-  });
+    fs.writeFile(
+        "../MM-DIRECT/redis_ir.conf",
+        modifiedStringConf,
+        function (err) {
+            if (err) throw err;
+            console.log("Configuração modificada e salva!");
+        }
+    );
 }

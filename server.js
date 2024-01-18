@@ -14,7 +14,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 
 const port = 8081;
 
@@ -78,7 +80,7 @@ const wss = new WebSocketServer({ server }, () => {
 });
 // rota para configurar o arquivo de configuração do MM-DIRECT
 app.post('/config', express.json(), (req, res) => {
-  const config = req.body.config;
+  const config = req.body;
 
   modifyConfigFile(config);
   

@@ -1,6 +1,6 @@
 import SetupForm from "./SetupForm";
 
-const SetupPanel = ({ initServer }:any) => {
+const SetupPanel = ({ initServer }: any) => {
     function onSubmitButtonPressed(e: any) {
         e.preventDefault();
 
@@ -9,9 +9,11 @@ const SetupPanel = ({ initServer }:any) => {
         const request: any = {}
 
         formData.forEach(function (value, key) {
-            request[key] = value;
+            if (value !== "") {
+                request[key] = value;
+            }
         })
-
+        console.log(request)
         const postRequest = fetch("http://localhost:8081/config", {
             method: "POST",
             body: JSON.stringify(request),
@@ -19,11 +21,13 @@ const SetupPanel = ({ initServer }:any) => {
                 "Content-type": "application/json; charset=UTF-8"
             }
         });
-
-        postRequest.then((resp: any) => {
-            console.log(resp)
-            initServer()
-        })
+        
+        postRequest
+            .then((resp: Response): object => resp.json())
+            .then((json): void => {
+                console.log(json);
+                initServer();
+            })
     }
 
     function ResetFunction(e: any) {
@@ -34,10 +38,6 @@ const SetupPanel = ({ initServer }:any) => {
         const reset = confirm('All options will reset to their initial values. Continue?');
 
         if (reset) form.reset();
-        let ResetEvent = new Event("reset");
-        console.log(ResetEvent.target);
-
-        dispatchEvent(ResetEvent)
     }
 
     return (

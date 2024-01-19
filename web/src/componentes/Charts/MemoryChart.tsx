@@ -3,14 +3,14 @@ import { Chart } from "react-google-charts";
 
 const MemoryChart = () => {
   const [data, setData] = useState<[number, number][]>([]);
-  // variável para armazenar o timestamp da última atualização
-  const timestamps: number[] = [];
-  // variável para armazenar a porcentagem de uso da CPU
-  const memoryUsage: number[] = [];
   // estado para armazenar o maior valor de memória usado
   const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
-
+  
   useEffect(() => {
+    // variável para armazenar o timestamp da última atualização
+    const timestamps: number[] = [];
+    // variável para armazenar a porcentagem de uso da CPU
+    const memoryUsage: number[] = [];
     const ws = new WebSocket("ws://localhost:8081/memory");
 
     ws.onmessage = (event) => {
@@ -67,7 +67,7 @@ const MemoryChart = () => {
       ws.close()
     }
 
-  }, []);
+  }, [maxMemoryUsage]);
 
   if (data.length === 0) {
     return <div className="loading">Loading...</div>;

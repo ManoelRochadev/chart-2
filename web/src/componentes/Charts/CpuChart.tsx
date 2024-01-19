@@ -42,9 +42,9 @@ const CpuChart = () => {
             console.log("Connection closed");
         };
 
-        // return () => {
-        //     ws.close()
-        // }
+        return () => {
+            ws.close()
+        }
     }, []);
 
     if (data.length === 0) {

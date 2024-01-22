@@ -386,7 +386,7 @@ wss.on('connection', async (ws, req) => {
       if (lines[0].match(/^\d+$/)) {
         const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
         x.push(num);
-        y.push(parseFloat(lines[2].replace(',', '.')));
+        y.push(parseFloat(lines[2]));
 
         ws.send(JSON.stringify([num, parseInt(lines[2])]));
       }

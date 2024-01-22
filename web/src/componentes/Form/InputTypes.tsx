@@ -1,11 +1,20 @@
 import { useState } from "react";
 
+interface TextInputProps {
+    TextName: string;
+    TextPlaceholder: string;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+    value?: string;
+}
+
 export const TextInput = ({
     TextName,
     TextPlaceholder,
     isDisable,
     children,
-}: any) => {
+    value
+}: TextInputProps) => {
     return (
         <div className="flex flex-col">
             <label
@@ -21,6 +30,7 @@ export const TextInput = ({
                 className="pl-3 h-2 p-0.5 basis-full rounded"
                 placeholder={TextPlaceholder}
                 disabled={isDisable}
+                value={value}
             />
         </div>
     );
@@ -76,7 +86,7 @@ export const RangeInput = ({
     RangeName,
     RangeDefault = 0,
     RangeMin = 0,
-    RangeMax = 100,
+    RangeMax = 500,
     RangeSteps = 1,
     isDisable,
     children,

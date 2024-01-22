@@ -34,13 +34,13 @@ const App = () => {
 
         const ws = new WebSocket(`ws://localhost:8081/start`);
 
-    ws.onmessage = (event) => {
-      setLogs((prevLogs) => [...prevLogs, event.data]);
-      if (event.data === "Generating information database commands") {
-        console.log("Server started");
-        setLoadingServer(false);
-        setGenerateArquive(true);
-      }
+        ws.onmessage = (event) => {
+            setLogs((prevLogs) => [...prevLogs, event.data]);
+            if (event.data === "Generating information database commands") {
+                console.log("Server started");
+                setLoadingServer(false);
+                setGenerateArquive(true);
+            }
 
             if (
                 event.data === "Generating system monitoring" &&

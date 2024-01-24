@@ -22,11 +22,13 @@ const SetupPanel = ({ initServer }: any) => {
                 "Content-type": "application/json; charset=UTF-8"
             }
         });
-
-        postRequest.then((resp: any) => {
-            console.log(resp)
-            initServer()
-        })
+        
+        postRequest
+            .then((resp: Response): object => resp.json())
+            .then((json): void => {
+                console.log(json);
+                initServer();
+            })
     }
 
     function ResetFunction(e: any) {

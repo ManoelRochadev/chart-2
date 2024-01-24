@@ -76,30 +76,34 @@ const App = () => {
         <div>
             <NavBar />
 
-            {!generateArquive && !generateArquiveMonitoring && (
-                <SetupPanel initServer={initializeServer} />
-            )}
+            <main>
 
-            {loadingServer && (
-                <div className="flex flex-row fixed top-0 w-full h-full pointer-events-none">
-                    <div className="h-fit sm:w-[90vw] md:w-full max-w-xl sm:max-w-lg md:max-w-2xl lg:max-w-lg py-10 px-7 mx-auto my-auto space-y-5 bg-slate-300 rounded-lg shadow-md text-center">
-                        <p className="animate-pulse text-slate-800 text-3xl font-mono">
-                            loading...
-                        </p>
+                {!generateArquive && !generateArquiveMonitoring && (
+                    <SetupPanel initServer={initializeServer} />
+                )}
+
+                {loadingServer && (
+                    <div className="flex flex-row fixed top-0 w-full h-full pointer-events-none">
+                        <div className="h-fit sm:w-[90vw] md:w-full max-w-xl sm:max-w-lg md:max-w-2xl lg:max-w-lg py-10 px-7 mx-auto my-auto space-y-5 bg-slate-300 rounded-lg shadow-md text-center">
+                            <p className="animate-pulse text-slate-800 text-3xl font-mono">
+                                loading...
+                            </p>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {experiment && (
-                <ChartBoard
-                    cpuChart={generateArquiveMonitoring}
-                    transferChart={generateArquive}
-                    terminalLog={logs}
-                    onReloadButtonClick={onReloadButtuonClick}
-                />
-            )}
+                {experiment && (
+                    <ChartBoard
+                        cpuChart={generateArquiveMonitoring}
+                        transferChart={generateArquive}
+                        terminalLog={logs}
+                        onReloadButtonClick={onReloadButtuonClick}
+                    />
+                )}
 
-            {/* <TerminalController value={logs} /> */}
+            </main>
+
+            <footer></footer>
         </div>
     );
 }

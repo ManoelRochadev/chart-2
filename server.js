@@ -66,6 +66,7 @@ let lendoArquivo = false; // Variável de controle para verificar se o arquivo e
 const x = [];
 const y = [];
 let databaseStartupCpu = 0;
+let databaseStartupMemoria = 0;
 
 const server = app.listen(port, () => {
   console.log(`rota para configuração do arquivo redis_ir.conf: http://localhost:${port}/config`);
@@ -82,7 +83,7 @@ const wss = new WebSocketServer({ server }, () => {
 app.post('/config', express.json(), (req, res) => {
   const config = req.body;
 
-  modifyConfigFile(config);
+  modifyConfigFile(config, rootPath);
   
   res.json(config);
 });
@@ -151,6 +152,9 @@ const processaCpu = async (ws, pathCpu) => {
 
     databaseStartupCpu = databaseStartupTime;
 
+    console.log(databaseStartupCpu)
+    console.log(lines)
+
     lines.splice(0, 2); // Remove header and database startup information
 
     for (let i = 0; i < lines.length; i++) {
@@ -158,9 +162,9 @@ const processaCpu = async (ws, pathCpu) => {
       if (linha[0].match(/^\d+$/)) {
         const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
         x.push(num);
-        y.push(parseFloat(linha[1].replace(',', '.')));
+        y.push(parseFloat(linha[1]));
 
-        ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+        ws.send(JSON.stringify([num, parseFloat(linha[1])]));
       }
     }
   }
@@ -175,7 +179,7 @@ const processaMemoria = async (ws, pathMemoria) => {
     const databaseStartupLine = lines[1].split(';');
     const databaseStartupTime = parseInt(databaseStartupLine[2]);
 
-    databaseStartupCpu = databaseStartupTime;
+    databaseStartupMemoria = databaseStartupTime;
 
     lines.splice(0, 2); // Remove header and database startup information
 
@@ -250,14 +254,19 @@ wss.on('connection', async (ws, req) => {
   }
   // rota websocket para o dataset de uso de cpu
   else if (req.url === '/cpu') {
-    const tail = new Tail(pathCpu);
-
+    
     await processaCpu(ws, pathCpu);
+
+    const tail = new Tail(pathCpu);
 
     tail.on("line", function (data) {
       const lines = data.split(';')
 
       const endTime = parseInt(lines[0]);
+
+      if (lines[0] === "Database startup") {
+        databaseStartupCpu = parseInt(lines[2]);
+      }
 
       if (lines[0].match(/^\d+$/)) {
         const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
@@ -383,8 +392,12 @@ wss.on('connection', async (ws, req) => {
 
       const endTime = parseInt(lines[0]);
 
+      if (lines[0] === "Database startup") {
+        databaseStartupMemoria = parseInt(lines[2]);
+      }
+
       if (lines[0].match(/^\d+$/)) {
-        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
+        const num = Math.floor((endTime - databaseStartupMemoria) / 1000000);
         x.push(num);
         y.push(parseFloat(lines[2]));
 

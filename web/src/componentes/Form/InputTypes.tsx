@@ -8,6 +8,29 @@ interface TextInputProps {
     value?: string;
 }
 
+interface CheckboxInputProps {
+    CheckboxName: string;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+}
+
+interface SwitchInputProps {
+    SwitchName: string;
+    onSwitchCheck?: any;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+}
+
+interface RangeInputProps {
+    RangeName: string;
+    RangeDefault?: number;
+    RangeMin?: number;
+    RangeMax?: number;
+    RangeSteps?: number;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+}
+
 export const TextInput = ({
     TextName,
     TextPlaceholder,
@@ -36,7 +59,7 @@ export const TextInput = ({
     );
 };
 
-export const CheckboxInput = ({ CheckboxName, isDisable, children }: any) => {
+export const CheckboxInput = ({ CheckboxName, isDisable, children }: CheckboxInputProps) => {
     return (
         <div className="w-full">
             <label
@@ -61,7 +84,7 @@ export const SwitchInput = ({
     onSwitchCheck,
     isDisable,
     children,
-}: any) => {
+}: SwitchInputProps) => {
     return (
         <div className="w-full">
             <label
@@ -90,8 +113,8 @@ export const RangeInput = ({
     RangeSteps = 1,
     isDisable,
     children,
-}: any) => {
-    const [inputValue, setInputValue] = useState<string>(RangeMin);
+}: RangeInputProps) => {
+    const [inputValue, setInputValue] = useState<string | number>(RangeMin);
     return (
         <div>
             <label

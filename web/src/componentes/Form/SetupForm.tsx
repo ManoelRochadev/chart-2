@@ -9,7 +9,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-3 justify-center max-h-[75vh] md:max-h-full px-4 py-2 overflow-auto lg:overflow-hidden">
                 <OptionsBoard BoardHeader="Indexer">
                     <div className="flex justify-around">
-                        <SwitchInput SwitchName="instantRecoveryState">
+                        <SwitchInput SwitchName="instantRecoveryState" defaultChecked>
                             Instant Recovery
                         </SwitchInput>
                         <SwitchInput SwitchName="instantRecoverySynchronous">
@@ -30,7 +30,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     >
                         indexed log filename
                     </TextInput>
-                    <RangeInput RangeName="indexerTimeInterval">
+                    <RangeInput RangeName="indexerTimeInterval" RangeDefault={500}>
                         Time interval
                     </RangeInput>
                 </OptionsBoard>

@@ -19,6 +19,7 @@ interface SwitchInputProps {
     onSwitchCheck?: any;
     isDisable?: boolean;
     children?: React.ReactNode;
+    defaultChecked?: boolean;
 }
 
 interface RangeInputProps {
@@ -53,7 +54,7 @@ export const TextInput = ({
                 className="pl-3 h-2 p-0.5 basis-full rounded"
                 placeholder={TextPlaceholder}
                 disabled={isDisable}
-                value={value}
+                defaultValue={value}
             />
         </div>
     );
@@ -84,6 +85,7 @@ export const SwitchInput = ({
     onSwitchCheck,
     isDisable,
     children,
+    defaultChecked
 }: SwitchInputProps) => {
     return (
         <div className="w-full">
@@ -98,6 +100,9 @@ export const SwitchInput = ({
                     id={`switch-${SwitchName}`}
                     onClick={onSwitchCheck}
                     disabled={isDisable}
+                    {
+                    ...defaultChecked && { defaultChecked }
+                    }
                 />
                 {children}
             </label>

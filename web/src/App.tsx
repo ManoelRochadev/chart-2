@@ -5,12 +5,14 @@ import ChartBoard from "./componentes/Charts/ChartBoard";
 
 
 
+
 const App = () => {
     const [loadingServer, setLoadingServer] = useState<boolean>(false);
     const [experiment, setExperiment] = useState<boolean>(false);
     const [generateArquive, setGenerateArquive] = useState<boolean>(false);
     const [generateArquiveMonitoring, setGenerateArquiveMonitoring] =
-        useState<boolean>(false);
+    useState<boolean>(false);
+    const [a, setA] = useState<WebSocket>();
 
     const [logs, setLogs] = useState<string[]>([]);
 
@@ -56,9 +58,13 @@ const App = () => {
                 setGenerateArquiveMonitoring(true);
             }
         };
+
+
+        setA(ws);
     };
 
     const onReloadButtuonClick = () => {
+        a?.close()
         setExperiment(false)
         setLogs([]);
         setGenerateArquive(false);

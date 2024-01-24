@@ -62,6 +62,8 @@ const MemoryChart = () => {
     ws.onclose = () => {
       console.log("Connection closed");
     };
+
+    return () => ws.close()
   }, []);
 
   if (data.length === 0) {

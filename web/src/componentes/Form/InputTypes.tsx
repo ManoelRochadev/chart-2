@@ -1,11 +1,44 @@
 import { useState } from "react";
 
+interface TextInputProps {
+    TextName: string;
+    TextPlaceholder: string;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+    value?: string;
+}
+
+interface CheckboxInputProps {
+    CheckboxName: string;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+}
+
+interface SwitchInputProps {
+    SwitchName: string;
+    onSwitchCheck?: any;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+    defaultChecked?: boolean;
+}
+
+interface RangeInputProps {
+    RangeName: string;
+    RangeDefault?: number;
+    RangeMin?: number;
+    RangeMax?: number;
+    RangeSteps?: number;
+    isDisable?: boolean;
+    children?: React.ReactNode;
+}
+
 export const TextInput = ({
     TextName,
     TextPlaceholder,
     isDisable,
     children,
-}: any) => {
+    value
+}: TextInputProps) => {
     return (
         <div className="flex flex-col">
             <label
@@ -21,12 +54,13 @@ export const TextInput = ({
                 className="pl-3 h-2 p-0.5 basis-full rounded"
                 placeholder={TextPlaceholder}
                 disabled={isDisable}
+                defaultValue={value}
             />
         </div>
     );
 };
 
-export const CheckboxInput = ({ CheckboxName, isDisable, children }: any) => {
+export const CheckboxInput = ({ CheckboxName, isDisable, children }: CheckboxInputProps) => {
     return (
         <div className="w-full">
             <label
@@ -51,7 +85,8 @@ export const SwitchInput = ({
     onSwitchCheck,
     isDisable,
     children,
-}: any) => {
+    defaultChecked
+}: SwitchInputProps) => {
     return (
         <div className="w-full">
             <label
@@ -65,6 +100,9 @@ export const SwitchInput = ({
                     id={`switch-${SwitchName}`}
                     onClick={onSwitchCheck}
                     disabled={isDisable}
+                    {
+                    ...defaultChecked && { defaultChecked }
+                    }
                 />
                 {children}
             </label>
@@ -76,12 +114,12 @@ export const RangeInput = ({
     RangeName,
     RangeDefault = 0,
     RangeMin = 0,
-    RangeMax = 100,
+    RangeMax = 500,
     RangeSteps = 1,
     isDisable,
     children,
-}: any) => {
-    const [inputValue, setInputValue] = useState<string>(RangeMin);
+}: RangeInputProps) => {
+    const [inputValue, setInputValue] = useState<string | number>(RangeMin);
     return (
         <div>
             <label

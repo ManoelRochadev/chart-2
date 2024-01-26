@@ -34,16 +34,11 @@ const App = () => {
         //             ? "teste_cpu"
         //             : "teste_data";
 
-        const ws = new WebSocket(`ws://localhost:8081/${url}`);
+        const ws = new WebSocket(`ws://localhost:8081/start`);
 
         ws.onmessage = (event) => {
-            console.log(event.data);
-            setExperiment(true);
             setLogs((prevLogs) => [...prevLogs, event.data]);
-            if (
-                event.data === "Generating information database commands" &&
-                !generateArquive
-            ) {
+            if (event.data === "Generating information database commands") {
                 console.log("Server started");
                 setLoadingServer(false);
                 setGenerateArquive(true);
@@ -90,20 +85,19 @@ const App = () => {
                             </p>
                         </div>
                     </div>
-                )}
 
-                {experiment && (
-                    <ChartBoard
-                        cpuChart={generateArquiveMonitoring}
-                        transferChart={generateArquive}
-                        terminalLog={logs}
-                        onReloadButtonClick={onReloadButtuonClick}
-                    />
                 )}
 
             </main>
+            {generateArquive && (
+                <ChartBoard
+                    cpuChart={generateArquiveMonitoring}
+                    transferChart={generateArquive}
+                    terminalLog={logs}
+                    onReloadButtonClick={onReloadButtuonClick}
+                />
+            )}
 
-            <footer></footer>
         </div>
     );
 }

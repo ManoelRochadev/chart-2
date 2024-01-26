@@ -9,7 +9,7 @@ const TransferChart = () => {
 
         ws.onmessage = (event) => {
             try {
-                const endMessage: string = "CSV file successfully processed";
+                const endMessage = "CSV file successfully processed";
                 if (event.data !== endMessage) {
 
 
@@ -29,9 +29,9 @@ const TransferChart = () => {
             console.log("Connection closed");
         };
 
-        // return () => {
-        //   ws.close();
-        // };
+        return () => {
+          ws.close();
+        };
     }, []);
 
     if (info.length === 0) {

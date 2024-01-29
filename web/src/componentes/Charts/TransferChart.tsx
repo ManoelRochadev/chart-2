@@ -1,11 +1,16 @@
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-const TransferChart = () => {
+const TransferChart = ({ onChartLoad }: any) => {
     const [info, setInfo] = useState<[number, number][]>([]);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/data");
+
+        ws.onopen = () => {
+            console.log(`conexão aberta em ${TransferChart.name}`);
+            onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
+        }
 
         ws.onmessage = (event) => {
             try {
@@ -26,12 +31,9 @@ const TransferChart = () => {
         };
 
         ws.onclose = () => {
-            console.log("Connection closed");
+            console.log("Transfer Connection closed");
         };
 
-        return () => {
-          ws.close();
-        };
     }, []);
 
     if (info.length === 0) {

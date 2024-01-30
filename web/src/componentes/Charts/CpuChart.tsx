@@ -2,16 +2,22 @@ import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
 
-const CpuChart = () => {
+const CpuChart = ({ onChartLoad }: any) => {
     const [data, setData] = useState<[number, number][]>([]);
+
     // variável para armazenar o timestamp da última atualização
     const timestamps: number[] = [];
+
     // variável para armazenar a porcentagem de uso da CPU
     const cpuUsage: number[] = [];
 
+
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/cpu");
-
+        ws.onopen = () => {
+            console.log(`conexão aberta em ${CpuChart.name}`);
+            onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
+        }
         ws.onmessage = (event) => {
             try {
                 const message = JSON.parse(event.data);
@@ -39,12 +45,10 @@ const CpuChart = () => {
         };
 
         ws.onclose = () => {
-            console.log("Connection closed");
+            console.log("CPU Connection closed");
         };
 
-        return () => {
-            ws.close()
-        }
+
     }, []);
 
     if (data.length === 0) {
@@ -85,6 +89,7 @@ const CpuChart = () => {
                 options={chartOptions}
                 data={chartData}
                 width="100%"
+
                 legendToggle
             />
         </div>

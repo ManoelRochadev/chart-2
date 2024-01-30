@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-const MemoryChart = () => {
+const MemoryChart = ({ onChartLoad }: any) => {
   const [data, setData] = useState<[number, number][]>([]);
+
   // estado para armazenar o maior valor de memória usado
   const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
-  
+
   useEffect(() => {
+
     // variável para armazenar o timestamp da última atualização
     const timestamps: number[] = [];
     // variável para armazenar a porcentagem de uso da CPU
     const memoryUsage: number[] = [];
+
     const ws = new WebSocket("ws://localhost:8081/memory");
+
+    ws.onopen = () => {
+      console.log(`conexão aberta em ${MemoryChart.name}`);
+      onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
+    }
 
     ws.onmessage = (event) => {
       try {
@@ -60,12 +68,9 @@ const MemoryChart = () => {
     };
 
     ws.onclose = () => {
-      console.log("Connection closed");
+      console.log("Memory Connection closed");
     };
 
-    return () => 
-      ws.close()
-    
 
   }, []);
 

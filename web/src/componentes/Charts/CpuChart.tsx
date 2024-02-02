@@ -83,7 +83,7 @@ const CpuChart = ({ onChartLoad }: any) => {
 
     return (
         <div className="mx-auto w-full text-center py-3 bg-white rounded ">
-            <h2 className="text-xl font-semibold">Uso de CPU</h2>
+            <h2 className="text-xl font-semibold">CPU Usage</h2>
             <Chart
                 chartType="LineChart"
                 options={chartOptions}

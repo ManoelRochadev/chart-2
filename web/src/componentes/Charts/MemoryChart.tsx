@@ -99,7 +99,7 @@ const MemoryChart = ({ onChartLoad }: any) => {
 
   return (
     <div className="mx-auto w-full text-center py-3 bg-white rounded ">
-      <h2>Uso de Memória</h2>
+      <h2>Memory Usage</h2>
       <Chart
         chartType="LineChart"
         options={chartOptions}

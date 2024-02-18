@@ -1,11 +1,22 @@
 import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
+import Loading from "./Loading"
+import { chartModeList } from "./ChartFunctions"
 
-const MemoryChart = () => {
+
+interface cpuChartProps {
+  chartMode: string,
+  onChartClick: (data: any) => void
+}
+
+
+const MemoryChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => {
+  const [selected, setSelected] = useState<boolean>(false);
   const [data, setData] = useState<[number, number][]>([]);
+
   // estado para armazenar o maior valor de memória usado
   const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
-  
+
   useEffect(() => {
     // variável para armazenar o timestamp da última atualização
     const timestamps: number[] = [];
@@ -54,6 +65,8 @@ const MemoryChart = () => {
             ];
           });
         }
+
+
       } catch (error) {
         console.error("Error parsing WebSocket message:", error);
       }
@@ -63,38 +76,26 @@ const MemoryChart = () => {
       console.log("Connection closed");
     };
 
-    return () => 
-      ws.close()
-    
+
 
   }, []);
 
   if (data.length === 0) {
-    return <div className="loading">Loading...</div>;
+    return (
+      <Loading />
+    );
   }
+
+
 
   const chartData = [["Timestamp ", "Memory Usage"], ...data];
 
-  const chartOptions = {
-    chart: {
-      title: "Memory Usage",
-      subtitle: "in %",
-    },
-    hAxis: {
-      title: "Time",
-    },
-    vAxis: {
-      title: "Memory Usage",
-      viewWindow: {
-        min: 0,
-        max: 100,
-      },
-    },
-  };
+  const chartOptions: any = chartModeList(chartMode);
+
+  chartOptions.title = "Memory Usage"
 
   return (
-    <div className="mx-auto w-full text-center py-3 bg-white rounded ">
-      <h2>Uso de Memória</h2>
+    <div onClick={() => onChartClick(data)}  className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700">
       <Chart
         chartType="LineChart"
         options={chartOptions}

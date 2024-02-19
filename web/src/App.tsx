@@ -4,28 +4,20 @@ import SetupPanel from "./componentes/Form/SetupPanel";
 import ChartBoard from "./componentes/Charts/ChartBoard";
 
 
-
-
 const App = () => {
     const [loadingServer, setLoadingServer] = useState<boolean>(false);
-    const [experiment, setExperiment] = useState<boolean>(false);
     const [generateArquive, setGenerateArquive] = useState<boolean>(false);
     const [generateArquiveMonitoring, setGenerateArquiveMonitoring] =
-    useState<boolean>(false);
-    const [a, setA] = useState<WebSocket>();
-
+        useState<boolean>(false);
+    const [startConnection, setStartConnection] = useState<WebSocket>();
     const [logs, setLogs] = useState<string[]>([]);
-
-    // const delay = (time: number) => {
-    //     return new Promise<void>((resolve) => setTimeout(resolve, time));
-    // };
 
     const initializeServer = () => {
         console.log("Iniciando servidor");
 
         setLoadingServer(!loadingServer);
 
-        const url = "teste_start";
+        const url = "start";
 
         // const url: string =
         //     params.includes("graph-cpu") && params.includes("graph-transf")
@@ -37,13 +29,8 @@ const App = () => {
         const ws = new WebSocket(`ws://localhost:8081/${url}`);
 
         ws.onmessage = (event) => {
-            console.log(event.data);
-            setExperiment(true);
             setLogs((prevLogs) => [...prevLogs, event.data]);
-            if (
-                event.data === "Generating information database commands" &&
-                !generateArquive
-            ) {
+            if (event.data === "Generating information database commands") {
                 console.log("Server started");
                 setLoadingServer(false);
                 setGenerateArquive(true);
@@ -59,13 +46,14 @@ const App = () => {
             }
         };
 
-
-        setA(ws);
+        setStartConnection(ws);
     };
 
-    const onReloadButtuonClick = () => {
-        a?.close()
-        setExperiment(false)
+    const onReloadButtuonClick = (e: Event, connectionsArray: WebSocket[]) => {
+        console.log(connectionsArray);
+
+        connectionsArray.forEach((conection: WebSocket) => conection.close())
+        startConnection?.close()
         setLogs([]);
         setGenerateArquive(false);
         setGenerateArquiveMonitoring(false);
@@ -90,9 +78,10 @@ const App = () => {
                             </p>
                         </div>
                     </div>
+
                 )}
 
-                {experiment && (
+                {generateArquive && (
                     <ChartBoard
                         cpuChart={generateArquiveMonitoring}
                         transferChart={generateArquive}
@@ -100,10 +89,8 @@ const App = () => {
                         onReloadButtonClick={onReloadButtuonClick}
                     />
                 )}
-
             </main>
 
-            <footer></footer>
         </div>
     );
 }

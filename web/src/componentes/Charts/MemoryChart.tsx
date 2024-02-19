@@ -17,11 +17,18 @@ const MemoryChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => 
   const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
 
   useEffect(() => {
+
     // variável para armazenar o timestamp da última atualização
     const timestamps: number[] = [];
     // variável para armazenar a porcentagem de uso da CPU
     const memoryUsage: number[] = [];
+
     const ws = new WebSocket("ws://localhost:8081/memory");
+
+    ws.onopen = () => {
+      console.log(`conexão aberta em ${MemoryChart.name}`);
+      onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
+    }
 
     ws.onmessage = (event) => {
       try {
@@ -72,7 +79,7 @@ const MemoryChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => 
     };
 
     ws.onclose = () => {
-      console.log("Connection closed");
+      console.log("Memory Connection closed");
     };
 
 

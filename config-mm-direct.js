@@ -285,7 +285,7 @@ overwrite_system_monitoring = "ON";  //ON | OFF
 `;
 
 // função para modificar o arquivo de configuração redis_ir.conf
-export function modifyConfigFile(config) {
+export function modifyConfigFile(config, rootPath) {
     const {
         aofFilename = "logs/sequentialLog.aof",
         instantRecoveryState = "ON",
@@ -533,7 +533,7 @@ String.prototype.toUpperCase()
         );
 
     fs.writeFile(
-        "../MM-DIRECT/redis_ir.conf",
+        `${rootPath}/redis_ir.conf`,
         modifiedStringConf,
         function (err) {
             if (err) throw err;

@@ -21,6 +21,7 @@ const ChartBoard = ({
     const [focusChartConfig, setFocusChartConfig] = useState<any>();
 
 
+    const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
 
     const ToggleTargetComponent = (targetValue: any, setTargetValue: any) => {
         setTargetValue(!targetValue)
@@ -35,7 +36,7 @@ const ChartBoard = ({
 
     return (
         <div className="grid grid-cols-2 gap-y-5 w-[95%] mx-auto my-8 p-4 bg-slate-200 rounded">
-            
+
             <ToggleSwitch SwitchLabel="Charts" SwitchName="toggle-scharts" ToggleFunction={() => { ToggleTargetComponent(showInsights, setShowInsights) }} />
             <ToggleSwitch SwitchLabel="Terminal" SwitchName="toggle-terminal" ToggleFunction={() => { ToggleTargetComponent(showTerminal, setShowTerminal) }} />
 
@@ -86,10 +87,20 @@ const ChartBoard = ({
                         <path strokeLinecap="round" strokeLinejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>)
                 }
+            </div>
+            <div className="grid grid-cols-subgrid  col-span-2 w-4/5">
+                <div className={` justify-self-center col-span-2 w-4/5 ${showTerminal || 'hidden'}`}>
+                    <TerminalController value={terminalLog} />
+                </div>
+                {!showTerminal &&
+                    (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" col-span-2 justify-self-center w-32 h-32 stroke-slate-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>)
+                }
 
             </div>
 
-            <ReloadButton onButtonClick={onReloadButtonClick} />
+            <ReloadButton onButtonClick={(e: Event) => { onReloadButtonClick(e, chartConnections) }} />
         </div>
     );
 };

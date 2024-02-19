@@ -9,7 +9,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-3 justify-center max-h-[75vh] md:max-h-full px-4 py-2 overflow-auto lg:overflow-hidden">
                 <OptionsBoard BoardHeader="Indexer">
                     <div className="flex justify-around">
-                        <SwitchInput SwitchName="instantRecoveryState">
+                        <SwitchInput SwitchName="instantRecoveryState" defaultChecked>
                             Instant Recovery
                         </SwitchInput>
                         <SwitchInput SwitchName="instantRecoverySynchronous">
@@ -19,16 +19,18 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     <TextInput
                         TextName="aofFilename"
                         TextPlaceholder="arquivo.aof"
+                        value="logs/sequentialLog.aof"
                     >
                         AOF filename
                     </TextInput>
                     <TextInput
                         TextName="indexedlogFilename"
                         TextPlaceholder="arquivo.txt"
+                        value="logs/indexedLog.db"
                     >
                         indexed log filename
                     </TextInput>
-                    <RangeInput RangeName="indexerTimeInterval">
+                    <RangeInput RangeName="indexerTimeInterval" RangeDefault={500}>
                         Time interval
                     </RangeInput>
                 </OptionsBoard>
@@ -80,6 +82,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     <TextInput
                         TextName="memtierBenchmarkParameters"
                         TextPlaceholder="--hide-histogram -n 5000 ..."
+                        value=" --hide-histogram -n 5000 --key-prefix='redisIR-' --key-minimum=1 --key-maximum=5000 --command='set  __key__ __data__' --command-ratio=5000 --command-key-pattern=S"
                     >
                         Parameters
                     </TextInput>
@@ -97,6 +100,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     <TextInput
                         TextName="recoveryReportFilename"
                         TextPlaceholder="arquivo.txt"
+                        value="recovery_report/recovery_report.txt"
                     >
                         Recovery filename
                     </TextInput>
@@ -109,6 +113,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     <TextInput
                         TextName="executedCommandsCsvFilename"
                         TextPlaceholder="arquivo.csv"
+                        value="datasets/datasets.csv"
                     >
                         Executed commands filename
                     </TextInput>
@@ -121,6 +126,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     <TextInput
                         TextName="indexingReportCsvFilename"
                         TextPlaceholder="arquivo.csv"
+                        value="indexing_report/indexing.csv"
                     >
                         Indexing filename
                     </TextInput>
@@ -143,6 +149,7 @@ const SetupForm = ({ submitFunction, resetFunction }: any) => {
                     <TextInput
                         TextName="systemMonitoringCsvFilename"
                         TextPlaceholder="arquivo.csv"
+                        value="system_monitoring/system_monitoring.csv"
                     >
                         Filename
                     </TextInput>

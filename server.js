@@ -14,7 +14,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*'
+}));
 
 const port = 8081;
 
@@ -33,7 +35,7 @@ if (!directories.includes('node_modules')) {
   })
 }
 
-const reactProcess = child_process.spawn('npm', [ 'run', 'dev'], {
+const reactProcess = child_process.spawn('npm', ['run', 'dev'], {
   cwd: reactApp,
 })
 
@@ -57,13 +59,20 @@ const pathCpu = rootPath + "/src/system_monitoring/system_monitoring.csv"
 
 // Variáveis de controle
 let total = 0; // Contador de linhas no CSV
+let totalLatencia = 0; // Contador de linhas no CSV
 let database_startup_time = 0; // Armazena o tempo de inicialização do banco de dados
+let database_startup_time_latencia = 0; // Armazena o tempo de inicialização do banco de dados
 const contagemComandos = []; // Armazena os arrays de contagem de comandos por segundo
 let arrayParaVerificarSeJaFoiEnviado = []; // Armazena os arrays para verificação de envio
 let lendoArquivo = false; // Variável de controle para verificar se o arquivo está sendo lido
 const x = [];
 const y = [];
+const x1 = [];
+const x2 = [];
+const y1 = [];
+const y2 = [];
 let databaseStartupCpu = 0;
+let databaseStartupMemoria = 0;
 
 const server = app.listen(port, () => {
   console.log(`rota para configuração do arquivo redis_ir.conf: http://localhost:${port}/config`);
@@ -78,10 +87,10 @@ const wss = new WebSocketServer({ server }, () => {
 });
 // rota para configurar o arquivo de configuração do MM-DIRECT
 app.post('/config', express.json(), (req, res) => {
-  const config = req.body.config;
+  const config = req.body;
 
-  modifyConfigFile(config);
-  
+  modifyConfigFile(config, rootPath);
+
   res.json(config);
 });
 
@@ -138,6 +147,39 @@ const processaCSV = async (ws, inputPath) => {
     });
 }
 
+// função para calcular latência
+const processaLatencia = async (ws, inputPath) => {
+  fs.createReadStream(inputPath, {
+    start: totalLatencia,
+  })
+    .pipe(csv())
+    .on('data', (row) => {
+      totalLatencia++;
+      lendoArquivo = true;
+
+      // Processar cada linha do CSV
+      if (totalLatencia === 1) {
+        database_startup_time_latencia = parseInt(row.startTime);
+      } else if (totalLatencia >= 3) {
+        // vericar se a latência é maior que 0
+        if (parseInt(row.type) != '0') {
+          const num = parseInt((parseInt(row.startTime) - database_startup_time_latencia) / 1000000);
+          if (row.type === 'N') {
+            x1.push(num);
+            y1.push(parseInt(row.latency));
+            ws.send(JSON.stringify({ 1: [num, parseInt(row.latency)] }));
+          }
+          if (row.type === 'A') {
+            x2.push(num);
+            y2.push(parseInt(row.latency));
+            ws.send(JSON.stringify({ 2: [num, parseInt(row.latency)] }));
+
+          }
+        }
+      }
+    })
+}
+
 // função para processar o dataset de uso de cpu
 const processaCpu = async (ws, pathCpu) => {
   const data = await fs.promises.readFile(pathCpu, 'utf-8');
@@ -149,6 +191,9 @@ const processaCpu = async (ws, pathCpu) => {
 
     databaseStartupCpu = databaseStartupTime;
 
+    console.log(databaseStartupCpu)
+    console.log(lines)
+
     lines.splice(0, 2); // Remove header and database startup information
 
     for (let i = 0; i < lines.length; i++) {
@@ -156,9 +201,9 @@ const processaCpu = async (ws, pathCpu) => {
       if (linha[0].match(/^\d+$/)) {
         const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
         x.push(num);
-        y.push(parseFloat(linha[1].replace(',', '.')));
+        y.push(parseFloat(linha[1]));
 
-        ws.send(JSON.stringify([num, parseFloat(linha[1].replace(',', '.'))]));
+        ws.send(JSON.stringify([num, parseFloat(linha[1])]));
       }
     }
   }
@@ -173,7 +218,7 @@ const processaMemoria = async (ws, pathMemoria) => {
     const databaseStartupLine = lines[1].split(';');
     const databaseStartupTime = parseInt(databaseStartupLine[2]);
 
-    databaseStartupCpu = databaseStartupTime;
+    databaseStartupMemoria = databaseStartupTime;
 
     lines.splice(0, 2); // Remove header and database startup information
 
@@ -248,14 +293,19 @@ wss.on('connection', async (ws, req) => {
   }
   // rota websocket para o dataset de uso de cpu
   else if (req.url === '/cpu') {
-    const tail = new Tail(pathCpu);
 
     await processaCpu(ws, pathCpu);
+
+    const tail = new Tail(pathCpu);
 
     tail.on("line", function (data) {
       const lines = data.split(';')
 
       const endTime = parseInt(lines[0]);
+
+      if (lines[0] === "Database startup") {
+        databaseStartupCpu = parseInt(lines[2]);
+      }
 
       if (lines[0].match(/^\d+$/)) {
         const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
@@ -304,7 +354,7 @@ wss.on('connection', async (ws, req) => {
           ws.close();
         });
     */
-   // ouvir o evento de saída do processo
+    // ouvir o evento de saída do processo
     child.stdout.on('data', (data) => {
       ws.send('Redis server started');
       const output = data.toString();
@@ -381,13 +431,49 @@ wss.on('connection', async (ws, req) => {
 
       const endTime = parseInt(lines[0]);
 
+      if (lines[0] === "Database startup") {
+        databaseStartupMemoria = parseInt(lines[2]);
+      }
+
       if (lines[0].match(/^\d+$/)) {
-        const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
+        const num = Math.floor((endTime - databaseStartupMemoria) / 1000000);
         x.push(num);
-        y.push(parseFloat(lines[2].replace(',', '.')));
+        y.push(parseFloat(lines[2]));
 
         ws.send(JSON.stringify([num, parseInt(lines[2])]));
       }
+    });
+  }
+
+  else if (req.url === '/latencia') {
+    await processaLatencia(ws, inputPath);
+
+    const tail = new Tail(pathCpu);
+
+    tail.on("line", function (data) {
+      const lines = data.split(';')
+
+      const endTime = parseInt(lines[0]);
+
+      if (lines[0] === "Database startup") {
+        database_startup_time_latencia = parseInt(lines[2]);
+      }
+
+      if (lines[0].match(/^\d+$/)) {
+        const num = Math.floor((endTime - database_startup_time_latencia) / 1000000);
+
+        if (lines[5] === 'N') {
+          x1.push(num);
+          y1.push(parseInt(lines[4]));
+          ws.send(JSON.stringify({ 1: [num, parseInt(lines[4])] }));
+        }
+        if (lines[5] === 'A') {
+          x2.push(num);
+          y2.push(parseInt(lines[4]));
+          ws.send(JSON.stringify({ 2: [num, parseInt(lines[4])] }));
+        }
+      }
+    
     });
   }
   else {

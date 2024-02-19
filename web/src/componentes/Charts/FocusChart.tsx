@@ -12,7 +12,7 @@ const FocusChart = ({ ChartData, ChartOptions }: FocusChartProps) => {
     const data = [["Timestamp ", "Memory Usage"], ...ChartData];
 
     return (
-        <div className="mx-auto w-full text-center py-3 bg-white rounded ">
+        <div id="focus_chart" className="mx-auto w-full text-center py-3 bg-white rounded ">
             <Chart
                 chartType="LineChart"
                 options={ChartOptions}

@@ -6,12 +6,14 @@ import { chartModeList } from "./ChartFunctions"
 
 interface cpuChartProps {
     chartMode: string,
-    onChartClick: (data: any) => void
+    onChartClick: (data: any) => void,
+    selectedChart?: boolean
 }
 
-const CpuChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => {
+
+const CpuChart = ({ chartMode = "default", onChartClick, selectedChart = false }: cpuChartProps) => {
     const [data, setData] = useState<[number, number][]>([]);
-    const [selected, setSelected] = useState<boolean>(true);
+    const [selected, setSelected] = useState<boolean>(selectedChart);
 
     // variável para armazenar o timestamp da última atualização
     const timestamps: number[] = [];
@@ -74,10 +76,13 @@ const CpuChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => {
 
     chartOptions.title = "CPU Usage"
 
+    if (selected) {
+        onChartClick(chartData)
+    }
 
     return (
 
-        <div onClick={() => onChartClick(data)} className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  ">
+        <div id="cpu_chart" className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  ">
             <Chart
                 chartType="LineChart"
                 options={chartOptions}

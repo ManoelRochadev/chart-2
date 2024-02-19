@@ -11,7 +11,6 @@ interface cpuChartProps {
 
 
 const MemoryChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => {
-  const [selected, setSelected] = useState<boolean>(false);
   const [data, setData] = useState<[number, number][]>([]);
 
   // estado para armazenar o maior valor de memória usado
@@ -95,7 +94,7 @@ const MemoryChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => 
   chartOptions.title = "Memory Usage"
 
   return (
-    <div onClick={() => onChartClick(data)}  className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700">
+    <div id="memory_chart"  className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700">
       <Chart
         chartType="LineChart"
         options={chartOptions}

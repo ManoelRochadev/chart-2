@@ -6,11 +6,13 @@ import { chartModeList } from "./ChartFunctions"
 
 interface cpuChartProps {
     chartMode: string,
-    onChartClick: (data: any) => void
+    onChartClick: (data: any) => void,
+    selectedChart?: boolean
 }
 
-const TransferChart = ({ chartMode = "default", onChartClick }: cpuChartProps) => {
+const TransferChart = ({ chartMode = "default", onChartClick, selectedChart = false }: cpuChartProps) => {
     const [data, setData] = useState<[number, number][]>([]);
+    const [selected, setSelected] = useState<boolean>(selectedChart);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/data");
@@ -53,11 +55,20 @@ const TransferChart = ({ chartMode = "default", onChartClick }: cpuChartProps) =
             ? "point { size: 6; fill-color: #a52714; }"
             : null,
     ])]
+
     const chartOptions: any = chartModeList(chartMode);
 
     chartOptions.title = "Transactions"
+
+    if (selected) {
+        // onChartClick(chartData)
+        console.log('oi');
+        
+    }
+
+
     return (
-        <div onClick={() => onChartClick(data)} className="mx-auto w-full text-center py-3 bg-white rounded">
+        <div id="transaction_chart" className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  ">
             <Chart
                 chartType="LineChart"
                 options={chartOptions}

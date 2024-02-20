@@ -17,8 +17,8 @@ const ChartBoard = ({
 }: any) => {
     const [showInsights, setShowInsights] = useState<boolean>(true);
     const [showTerminal, setShowTerminal] = useState<boolean>(true);
-   
-    const [selectedChart, setSelectedChart] = useState<any>("CpuChart");
+
+    const [selectedChart, setSelectedChart] = useState<any>("");
     const [focusChartData, setFocusChartData] = useState<[[string, string][], [number, number][]][]>([]);
     const [focusChartConfig, setFocusChartConfig] = useState<any>(null);
     const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
@@ -45,7 +45,8 @@ const ChartBoard = ({
             <div className={`grid grid-cols-4 col-span-2 gap-2`}>
 
                 <sharedData.Provider value={{ selectedChart: { get: () => selectedChart, set: setSelectedChart }, data: { get: () => focusChartData, set: setFocusChartData }, config: { get: () => focusChartConfig, set: setFocusChartConfig } }}>
-                    <div className="space-y-3">
+                    <div className="after:bg-slate-600 h-full w-full">
+                    <div className="max-h-72  overflow-auto  space-y-3 pr-1">
                         <div id="chart_1" className={`${showInsights ? "" : 'hidden'}`}>
                             {cpuChart && <CpuChart chartMode="minimalist" onChartLoad={setChartConnections} onChartClick={click} />}
                         </div>
@@ -56,9 +57,10 @@ const ChartBoard = ({
                             {transferChart && <MemoryChart chartMode="minimalist" onChartLoad={setChartConnections} onChartClick={click} />}
                         </div>
                     </div>
+                    </div>
 
                     <div className={` bg-slate-500 col-span-3 ${showInsights || 'hidden'}`}>
-                        <FocusChart />
+                        {/* <FocusChart /> */}
                     </div>
                 </sharedData.Provider>
 

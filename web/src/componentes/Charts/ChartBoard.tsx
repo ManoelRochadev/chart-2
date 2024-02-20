@@ -1,13 +1,13 @@
-import { useState, createContext } from "react";
+import { useState } from "react";
+import { sharedData } from "./ChartContext";
 import CpuChart from "./CpuChart";
-import TransferChart from "./TransferChart";
+import TransactionChart from "./TransferChart";
 import MemoryChart from "./MemoryChart";
 import FocusChart from "./FocusChart";
 import TerminalController from "../TerminalController";
 import ToggleSwitch from "./ToggleSwitch";
 import ReloadButton from "../ReloadButton";
 
-const data = createContext<string>("")
 
 const ChartBoard = ({
     cpuChart,
@@ -17,11 +17,12 @@ const ChartBoard = ({
 }: any) => {
     const [showInsights, setShowInsights] = useState<boolean>(true);
     const [showTerminal, setShowTerminal] = useState<boolean>(true);
-    const [focusChartData, setFocusChartData] = useState<[number, number][]>([]);
-    const [focusChartConfig, setFocusChartConfig] = useState<any>();
-
-
+   
+    const [selectedChart, setSelectedChart] = useState<any>("CpuChart");
+    const [focusChartData, setFocusChartData] = useState<[[string, string][], [number, number][]][]>([]);
+    const [focusChartConfig, setFocusChartConfig] = useState<any>(null);
     const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
+
 
     const ToggleTargetComponent = (targetValue: any, setTargetValue: any) => {
         setTargetValue(!targetValue)
@@ -43,30 +44,23 @@ const ChartBoard = ({
 
             <div className={`grid grid-cols-4 col-span-2 gap-2`}>
 
-                <data.Provider value={'a'}>
+                <sharedData.Provider value={{ selectedChart: { get: () => selectedChart, set: setSelectedChart }, data: { get: () => focusChartData, set: setFocusChartData }, config: { get: () => focusChartConfig, set: setFocusChartConfig } }}>
                     <div className="space-y-3">
-                        <div id="chart_1" className={`${showInsights || 'hidden'}`}>
-                            {cpuChart && <CpuChart chartMode="minimalist" onChartClick={click} />}
+                        <div id="chart_1" className={`${showInsights ? "" : 'hidden'}`}>
+                            {cpuChart && <CpuChart chartMode="minimalist" onChartLoad={setChartConnections} onChartClick={click} />}
                         </div>
-                        <div id="chart_2" className={`${showInsights || 'hidden'}`}>
-                            {transferChart && <TransferChart chartMode="minimalist" onChartClick={click} />}
+                        <div id="chart_2" className={`${showInsights ? "" : 'hidden'}`}>
+                            {transferChart && <TransactionChart chartMode="minimalist" onChartLoad={setChartConnections} onChartClick={click} />}
                         </div>
-                        <div id="chart_3" className={`${showInsights || 'hidden'}`}>
-                            {transferChart && <MemoryChart chartMode="minimalist" onChartClick={click} />}
+                        <div id="chart_3" className={`${showInsights ? "" : 'hidden'}`}>
+                            {transferChart && <MemoryChart chartMode="minimalist" onChartLoad={setChartConnections} onChartClick={click} />}
                         </div>
                     </div>
 
                     <div className={` bg-slate-500 col-span-3 ${showInsights || 'hidden'}`}>
-                        <FocusChart ChartData={focusChartData} ChartOptions={{
-                            hAxis: {
-                            },
-                            vAxis: {
-
-                            },
-                            legend: { position: 'bottom', textStyle: { color: 'blue', fontSize: 14 } }
-                        }} />
+                        <FocusChart />
                     </div>
-                </data.Provider>
+                </sharedData.Provider>
 
                 {!showInsights &&
                     (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" col-span-full justify-self-center w-32 h-32 stroke-slate-500">
@@ -87,17 +81,6 @@ const ChartBoard = ({
                         <path strokeLinecap="round" strokeLinejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
                     </svg>)
                 }
-            </div>
-            <div className="grid grid-cols-subgrid  col-span-2 w-4/5">
-                <div className={` justify-self-center col-span-2 w-4/5 ${showTerminal || 'hidden'}`}>
-                    <TerminalController value={terminalLog} />
-                </div>
-                {!showTerminal &&
-                    (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" col-span-2 justify-self-center w-32 h-32 stroke-slate-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z" />
-                    </svg>)
-                }
-
             </div>
 
             <ReloadButton onButtonClick={(e: Event) => { onReloadButtonClick(e, chartConnections) }} />

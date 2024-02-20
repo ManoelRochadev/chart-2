@@ -1,24 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Chart } from "react-google-charts";
-import Loading from "./Loading"
 import { chartModeList } from "./ChartFunctions"
+import { sharedData } from "./ChartContext";
+import Loading from "./Loading"
 
 
 interface cpuChartProps {
     chartMode: string,
     onChartClick: (data: any) => void,
-    selectedChart?: boolean
+    onChartLoad: any,
+    selectedChart?: boolean,
 }
 
-const TransferChart = ({ chartMode = "default", onChartClick, selectedChart = false }: cpuChartProps) => {
+const TransactionChart = ({ chartMode = "default", onChartClick, onChartLoad, selectedChart = false }: cpuChartProps) => {
     const [data, setData] = useState<[number, number][]>([]);
     const [selected, setSelected] = useState<boolean>(selectedChart);
+    const context = useContext(sharedData);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/data");
 
         ws.onopen = () => {
-            console.log(`conexão aberta em ${TransferChart.name}`);
+            console.log(`conexão aberta em ${TransactionChart.name}`);
             onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
         }
 
@@ -65,15 +68,26 @@ const TransferChart = ({ chartMode = "default", onChartClick, selectedChart = fa
 
     chartOptions.title = "Transactions"
 
-    if (selected) {
-        // onChartClick(chartData)
-        console.log('oi');
-        
+    const updateContext = () => {
+        context.selectedChart.set(TransactionChart.name);
+        context.data.set(chartData);
+        context.config.set(chartOptions);
+    }
+
+    if (context.selectedChart.get() === TransactionChart.name) {
+
+        updateContext()
+
     }
 
 
+
     return (
-        <div id="transaction_chart" className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  ">
+        <div
+            id="Transaction_chart"
+            className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
+            onClick={() => updateContext}
+        >
             <Chart
                 chartType="LineChart"
                 options={chartOptions}
@@ -84,4 +98,4 @@ const TransferChart = ({ chartMode = "default", onChartClick, selectedChart = fa
     );
 };
 
-export default TransferChart;
+export default TransactionChart;

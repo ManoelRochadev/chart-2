@@ -17,7 +17,7 @@ const App = () => {
 
         setLoadingServer(!loadingServer);
 
-        const url = "start";
+        const url = "teste_start";
 
         // const url: string =
         //     params.includes("graph-cpu") && params.includes("graph-transf")

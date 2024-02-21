@@ -50,8 +50,6 @@ const App = () => {
     };
 
     const onReloadButtuonClick = (e: Event, connectionsArray: WebSocket[]) => {
-        console.log(connectionsArray);
-
         connectionsArray.forEach((conection: WebSocket) => conection.close())
         startConnection?.close()
         setLogs([]);

@@ -9,12 +9,12 @@ const SetupPanel = ({ initServer }: any) => {
         const request: any = {}
 
         formData.forEach(function (value, key) {
-            if (value !== ""){
+            if (value !== "") {
                 request[key] = value;
             }
         })
         console.log(request);
-        
+
         const postRequest = fetch("http://localhost:8081/config", {
             method: "POST",
             body: JSON.stringify(request),
@@ -22,7 +22,7 @@ const SetupPanel = ({ initServer }: any) => {
                 "Content-type": "application/json; charset=UTF-8"
             }
         });
-        
+
         postRequest
             .then((resp: Response): object => resp.json())
             .then((json): void => {

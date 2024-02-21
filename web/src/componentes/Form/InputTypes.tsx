@@ -91,7 +91,7 @@ export const SwitchInput = ({
         <div className="w-full">
             <label
                 htmlFor={`switch-${SwitchName}`}
-                className="font-semibold align-middle text-sm md:text-lg"
+                className="font-semibold align-middle text-sm md:text-md "
             >
                 <input
                     type="checkbox"

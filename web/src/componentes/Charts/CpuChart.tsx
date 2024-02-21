@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Chart } from "react-google-charts";
-import Loading from "./Loading"
 import { chartModeList } from "./ChartFunctions"
+import { sharedData } from "./ChartContext";
+import Loading from "./Loading"
 
 
 interface cpuChartProps {
     chartMode: string,
     onChartClick: (data: any) => void,
-    selectedChart?: boolean
+    onChartLoad: any,
+    selectedChart?: boolean,
 }
 
 
-const CpuChart = ({ chartMode = "default", onChartClick, selectedChart = false }: cpuChartProps) => {
+const CpuChart = ({ chartMode = "default", onChartClick, onChartLoad, selectedChart = false }: cpuChartProps) => {
     const [data, setData] = useState<[number, number][]>([]);
     const [selected, setSelected] = useState<boolean>(selectedChart);
+    const context = useContext(sharedData);
 
     // variável para armazenar o timestamp da última atualização
     const timestamps: number[] = [];
@@ -79,13 +82,22 @@ const CpuChart = ({ chartMode = "default", onChartClick, selectedChart = false }
 
     chartOptions.title = "CPU Usage"
 
-    if (selected) {
-        onChartClick(chartData)
+    if (context.selectedChart.get() === CpuChart.name) {
+
+        context.selectedChart.set(CpuChart.name);
+        context.data.set(chartData);
+        context.config.set(chartOptions);
+
     }
 
     return (
 
-        <div id="cpu_chart" className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  ">
+        <div
+            id="cpu_chart"
+            className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
+            onClick={() => context.selectedChart.set(CpuChart.name)}
+        >
+
             <Chart
                 chartType="LineChart"
                 options={chartOptions}

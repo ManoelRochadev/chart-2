@@ -1,14 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Chart } from "react-google-charts";
+import { chartModeList } from "./ChartFunctions"
+import { sharedData } from "./ChartContext";
+import Loading from "./Loading"
 
-const TransferChart = ({ onChartLoad }: any) => {
-    const [info, setInfo] = useState<[number, number][]>([]);
+
+interface cpuChartProps {
+    chartMode: string,
+    onChartClick: (data: any) => void,
+    onChartLoad: any,
+    selectedChart?: boolean,
+}
+
+const TransactionChart = ({ chartMode = "default", onChartClick, onChartLoad, selectedChart = false }: cpuChartProps) => {
+    const [data, setData] = useState<[number, number][]>([]);
+    const [selected, setSelected] = useState<boolean>(selectedChart);
+    const context = useContext(sharedData);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/data");
 
         ws.onopen = () => {
-            console.log(`conexão aberta em ${TransferChart.name}`);
+            console.log(`conexão aberta em ${TransactionChart.name}`);
             onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
         }
 
@@ -19,7 +32,7 @@ const TransferChart = ({ onChartLoad }: any) => {
 
 
                     const message = JSON.parse(event.data);
-                    setInfo((prevInfo) => [...prevInfo, message]);
+                    setData((prevInfo) => [...prevInfo, message]);
 
                 }
                 if (event.data === endMessage) {
@@ -34,49 +47,47 @@ const TransferChart = ({ onChartLoad }: any) => {
             console.log("Transfer Connection closed");
         };
 
+
     }, []);
 
-    if (info.length === 0) {
+    if (data.length === 0) {
         return (
-            <div className="flex flex-row top-0 w-full h-full pointer-events-none">
-                <div className="h-fit sm:w-[90vw] md:w-full max-w-xl sm:max-w-lg md:max-w-2xl lg:max-w-lg py-10 px-7 mx-auto my-auto space-y-5 bg-slate-300 rounded-lg shadow-md text-center">
-                    <p className="animate-pulse text-slate-800 text-lg font-mono">
-                        loading...
-                    </p>
-                </div>
-            </div>);
+            <Loading />
+        );
     }
 
-    const chartData = [["Timestamp", "Transitions", { role: "style" }], ...info.map((item) => [
+    const chartData = [["Timestamp", "Transitions", { role: "style" }], ...data.map((item) => [
         item[0],
         item[1],
         item[1] < 500
             ? "point { size: 6; fill-color: #a52714; }"
             : null,
-    ])
-    ]
+    ])]
 
-    const chartOptions = {
-        chart: {
-            title: "Transitions",
-            subtitle: "in %",
-        },
-        hAxis: {
-            title: "Time",
-        },
-        vAxis: {
-            title: "Transitions",
-            viewWindow: {
-                min: 0,
-                max: 40000,
-            },
-        },
-        pointSize: 1,
-    };
+    const chartOptions: any = chartModeList(chartMode);
+
+    chartOptions.title = "Transactions"
+
+    const updateContext = () => {
+        context.selectedChart.set(TransactionChart.name);
+        context.data.set(chartData);
+        context.config.set(chartOptions);
+    }
+
+    if (context.selectedChart.get() === TransactionChart.name) {
+
+        updateContext()
+
+    }
+
+
 
     return (
-        <div className="mx-auto w-full text-center py-3 bg-white rounded">
-            <h2 className="text-xl font-semibold">Throughput</h2>
+        <div
+            id="Transaction_chart"
+            className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
+            onClick={() => updateContext}
+        >
             <Chart
                 chartType="LineChart"
                 options={chartOptions}
@@ -87,4 +98,4 @@ const TransferChart = ({ onChartLoad }: any) => {
     );
 };
 
-export default TransferChart;
+export default TransactionChart;

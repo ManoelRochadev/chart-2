@@ -17,7 +17,7 @@ const App = () => {
 
         setLoadingServer(!loadingServer);
 
-        const url = "start";
+        const url = "teste_start";
 
         // const url: string =
         //     params.includes("graph-cpu") && params.includes("graph-transf")
@@ -50,8 +50,6 @@ const App = () => {
     };
 
     const onReloadButtuonClick = (e: Event, connectionsArray: WebSocket[]) => {
-        console.log(connectionsArray);
-
         connectionsArray.forEach((conection: WebSocket) => conection.close())
         startConnection?.close()
         setLogs([]);

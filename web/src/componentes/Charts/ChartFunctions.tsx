@@ -1,6 +1,10 @@
-export const chartModeList: any = (mode = "default") => {
-    const modes: any = {
+import { GoogleChartOptions } from "react-google-charts"
+
+export const chartModeList = (mode = "default", title: string) => {
+    const modes: Record<string, GoogleChartOptions> = {
         default: {
+            title,
+            backgroundColor: "white",
             hAxis: {
             },
             vAxis: {
@@ -13,6 +17,8 @@ export const chartModeList: any = (mode = "default") => {
         },
 
         minimalist: {
+            title,
+            backgroundColor: "white",
             titleTextStyle: {
                 fontSize: 14
             },

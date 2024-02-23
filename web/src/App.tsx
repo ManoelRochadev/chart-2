@@ -26,7 +26,7 @@ const App = () => {
         //             ? "teste_cpu"
         //             : "teste_data";
 
-        const ws = new WebSocket(`ws://localhost:8081/${url}`);
+        const ws = new WebSocket(`ws://localhost:8081/start`);
 
         ws.onmessage = (event) => {
             setLogs((prevLogs) => [...prevLogs, event.data]);

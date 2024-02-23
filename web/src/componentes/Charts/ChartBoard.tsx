@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { sharedData } from "./ChartContext";
+import { useEffect, useMemo, useState } from "react";
+//import { sharedData } from "./ChartContext";
 import CpuChart from "./CpuChart";
 import TransactionChart from "./TransferChart";
 import MemoryChart from "./MemoryChart";
@@ -24,9 +24,9 @@ const ChartBoard = ({
     const [showInsights, setShowInsights] = useState<boolean>(true);
     const [showTerminal, setShowTerminal] = useState<boolean>(true);
    
-    const [selectedChart, setSelectedChart] = useState<any>("CpuChart");
-    const [focusChartData, setFocusChartData] = useState<[[string, string][], [number, number][]][]>([]);
-    const [focusChartConfig, setFocusChartConfig] = useState<any>(null);
+    const [selectedChart, setSelectedChart] = useState<"CpuChart" | "TransactionChart" | "MemoryChart">("CpuChart");
+   // const [focusChartData, setFocusChartData] = useState<[[string, string][], [number, number][]][]>([]);
+   // const [focusChartConfig, setFocusChartConfig] = useState<any>(null);
     const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
     const [dataCPU, setDataCPU] = useState<[number, number][]>([]);
     const [dataTransfer, setDataTransfer] = useState<[number, number][]>([]);
@@ -42,6 +42,12 @@ const ChartBoard = ({
     // variável para armazenar a porcentagem de uso da CPU
     const cpuUsage: number[] = [];
     const memoryUsage: number[] = [];
+
+    const focusChartComponents = useMemo(() => ({
+        "CpuChart": <CpuChart  data={dataCPU} chartMode="default" />,
+        "TransactionChart": <TransactionChart data={dataTransfer} chartMode="default" />,
+        "MemoryChart": <MemoryChart data={dataMemory} chartMode="default" />
+    }), [dataCPU, dataTransfer, dataMemory]);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/cpu");
@@ -182,15 +188,7 @@ const ChartBoard = ({
         setTargetValue(!targetValue)
     };
 
-    /*
-    const updateFocusChart = (data: any, setFunction: any) => {
-        setFunction(data);
-    }
-    const click = (data: any) => {
-        updateFocusChart(data, setFocusChartData);
-    }
-*/
-    const handleChartClick = (chartName: string) => {
+    const handleChartClick = (chartName: "CpuChart" | "TransactionChart" | "MemoryChart") => {
         setSelectedChart(chartName);
     }
 
@@ -203,25 +201,23 @@ const ChartBoard = ({
 
             <div className={`grid grid-cols-4 col-span-2 gap-2`}>
 
-                <sharedData.Provider value={{ selectedChart: { get: () => selectedChart, set: setSelectedChart }, data: { get: () => focusChartData, set: setFocusChartData }, config: { get: () => focusChartConfig, set: setFocusChartConfig } }}>
+                <>
                     <div className="space-y-3">
-                        <div id="chart_1" className={`${showInsights ? "" : 'hidden'}`} onClick={() => handleChartClick("CpuChart")}>
+                        <button id="chart_1" className={`${showInsights ? "" : 'hidden'} w-full`} onClick={() => handleChartClick("CpuChart")}>
                             {cpuChart && <CpuChart chartMode="minimalist" data={dataCPU} />}
-                        </div>
-                        <div id="chart_2" className={`${showInsights ? "" : 'hidden'}`} onClick={() => handleChartClick("TransactionChart")}>
+                        </button>
+                        <button id="chart_2" className={`${showInsights ? "" : 'hidden'} w-full`} onClick={() => handleChartClick("TransactionChart")}>
                             {transferChart && <TransactionChart data={dataTransfer} chartMode="minimalist"/>}
-                        </div>
-                        <div id="chart_3" className={`${showInsights ? "" : 'hidden'}`} onClick={() => handleChartClick("MemoryChart")}>
+                        </button>
+                        <button id="chart_3" className={`${showInsights ? "" : 'hidden'} w-full`} onClick={() => handleChartClick("MemoryChart")}>
                             {transferChart && <MemoryChart chartMode="minimalist" data={dataMemory} />}
-                        </div>
+                        </button>
                     </div>
 
                     <div className={` bg-slate-500 col-span-3 ${showInsights || 'hidden'}`}>
-                        {selectedChart === "CpuChart" && <FocusChart xLabel="timestamp" yLabel="CPU Usage" data={dataCPU} chartMode="default" />}
-                        {selectedChart === "TransactionChart" && <FocusChart xLabel="timestamp" yLabel="Transitions" data={dataTransfer} chartMode="default" />}
-                        {selectedChart === "MemoryChart" && <FocusChart xLabel="timestamp" yLabel="Memory Usage" data={dataMemory} chartMode="default" />}
+                        {focusChartComponents[selectedChart]}
                     </div>
-                </sharedData.Provider>
+                </>
 
                 {!showInsights &&
                     (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" col-span-full justify-self-center w-32 h-32 stroke-slate-500">

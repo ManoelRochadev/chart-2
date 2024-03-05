@@ -1,12 +1,14 @@
 import { useState } from "react";
 import OptionsBoard from "./OptionsBoard";
 import { TextInput, SwitchInput, RangeInput } from "./InputTypes";
+import OptionHint from "./OptionHint";
 
 const IndexerOptions = ({ onEdited }: any) => {
     const [edited, setEdited] = useState<boolean>(false);
 
     return (
-        <OptionsBoard BoardHeader="Indexer">
+        <OptionsBoard BoardHeader="Indexer" hintIcon={<OptionHint>hey!</OptionHint>}>
+
             <div className="flex justify-around">
                 <SwitchInput SwitchName="instantRecoveryState" onSwitchCheck={() => { setEdited(true); onEdited(IndexerOptions.name) }} defaultChecked>
                     Instant Recovery
@@ -20,7 +22,7 @@ const IndexerOptions = ({ onEdited }: any) => {
                 TextPlaceholder="arquivo.aof"
                 value="logs/sequentialLog.aof"
                 onTextInput={() => { setEdited(true); onEdited(IndexerOptions.name) }}
-                >
+            >
                 AOF filename
             </TextInput>
             <TextInput

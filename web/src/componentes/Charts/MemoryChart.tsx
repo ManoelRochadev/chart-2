@@ -11,14 +11,7 @@ interface cpuChartProps {
 }
 
 
-const MemoryChart = ({chartMode , data }: cpuChartProps) => {
-
-  //const context = useContext(sharedData);
-
-  // estado para armazenar o maior valor de memória usado
-  //const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
-
-  
+const MemoryChart = ({ chartMode, data }: cpuChartProps) => {
 
   if (data.length === 0) {
     return (
@@ -26,25 +19,14 @@ const MemoryChart = ({chartMode , data }: cpuChartProps) => {
     );
   }
 
-
   const chartData = [["Timestamp ", "Memory Usage"], ...data];
-
-  //const chartOptions: any = chartModeList(chartMode);
-
   const chartOptions = chartModeList(chartMode, "Memory Usage");
-
-
-  // if (context.selectedChart === MemoryChart.name) {
-  //   setContext({ selectedChart: MemoryChart.name, data: chartData, config: chartOptions })
-  // }
-
 
   return (
     <div
-    id="Memory_chart"
-    className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
-    // onClick={() => setContext({ selectedChart: "CpuChart", data: chartData, config: chartOptions })}
->
+      id="Memory_chart"
+      className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
+    >
       <Chart
         chartType="LineChart"
         options={chartOptions}

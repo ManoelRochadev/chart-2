@@ -10,11 +10,8 @@ interface cpuChartProps {
     chartMode: "default" | "minimalist"
 }
 
-const TransactionChart = ({chartMode ,data, }: cpuChartProps) => {
-    //const [selected, setSelected] = useState<boolean>(selectedChart);
-  //  const context = useContext(sharedData);
+const TransactionChart = ({ chartMode, data, }: cpuChartProps) => {
 
-   
     if (data.length === 0) {
         return (
             <Loading />

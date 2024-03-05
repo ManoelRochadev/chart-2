@@ -17,16 +17,7 @@ const App = () => {
 
         setLoadingServer(!loadingServer);
 
-        const url = "teste_start";
-
-        // const url: string =
-        //     params.includes("graph-cpu") && params.includes("graph-transf")
-        //         ? "teste_start"
-        //         : params.includes("graph-cpu")
-        //             ? "teste_cpu"
-        //             : "teste_data";
-
-        const ws = new WebSocket(`ws://localhost:8081/start`);
+        const ws = new WebSocket(`ws://localhost:8081/teste_start`);
 
         ws.onmessage = (event) => {
             setLogs((prevLogs) => [...prevLogs, event.data]);

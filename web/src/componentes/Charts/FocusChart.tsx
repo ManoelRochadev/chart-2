@@ -12,8 +12,8 @@ interface FocusChartProps {
 }
 
 
-const FocusChart = ({chartMode="default", data, xLabel, yLabel}: FocusChartProps) => {
-  //  const context = useContext(sharedData);
+const FocusChart = ({ chartMode = "default", data, xLabel, yLabel }: FocusChartProps) => {
+    //  const context = useContext(sharedData);
 
     const chartData = [[xLabel, yLabel], ...data];
 

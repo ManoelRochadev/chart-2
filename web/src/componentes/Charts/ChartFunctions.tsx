@@ -5,14 +5,6 @@ export const chartModeList = (mode = "default", title: string) => {
         default: {
             title,
             backgroundColor: "white",
-            hAxis: {
-            },
-            vAxis: {
-                viewWindow: {
-                    min: 0,
-                    max: 100,
-                },
-            },
             legend: { position: 'bottom', textStyle: { color: 'blue', fontSize: 14 } }
         },
 
@@ -33,6 +25,8 @@ export const chartModeList = (mode = "default", title: string) => {
             vAxis: {
                 textPosition: 'none',
             },
+            width: 160,
+            height:100,
             legend: "none",
             enableInteractivity: false,
         }

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-//import { sharedData } from "./ChartContext";
 import CpuChart from "./CpuChart";
 import TransactionChart from "./TransferChart";
 import MemoryChart from "./MemoryChart";
@@ -23,10 +22,8 @@ const ChartBoard = ({
 }: ChartBoardProps) => {
     const [showInsights, setShowInsights] = useState<boolean>(true);
     const [showTerminal, setShowTerminal] = useState<boolean>(true);
-   
+
     const [selectedChart, setSelectedChart] = useState<"CpuChart" | "TransactionChart" | "MemoryChart">("CpuChart");
-   // const [focusChartData, setFocusChartData] = useState<[[string, string][], [number, number][]][]>([]);
-   // const [focusChartConfig, setFocusChartConfig] = useState<any>(null);
     const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
     const [dataCPU, setDataCPU] = useState<[number, number][]>([]);
     const [dataTransfer, setDataTransfer] = useState<[number, number][]>([]);
@@ -44,7 +41,7 @@ const ChartBoard = ({
     const memoryUsage: number[] = [];
 
     const focusChartComponents = useMemo(() => ({
-        "CpuChart": <CpuChart  data={dataCPU} chartMode="default" />,
+        "CpuChart": <CpuChart data={dataCPU} chartMode="default" />,
         "TransactionChart": <TransactionChart data={dataTransfer} chartMode="default" />,
         "MemoryChart": <MemoryChart data={dataMemory} chartMode="default" />
     }), [dataCPU, dataTransfer, dataMemory]);
@@ -83,7 +80,7 @@ const ChartBoard = ({
             }
         };
 
-      return  ws.onclose = () => {
+        return ws.onclose = () => {
             console.log("CPU Connection closed");
         };
 
@@ -116,7 +113,7 @@ const ChartBoard = ({
             }
         };
 
-      return  ws.onclose = () => {
+        return ws.onclose = () => {
             console.log("Transfer Connection closed");
         };
     }, [])
@@ -177,7 +174,7 @@ const ChartBoard = ({
             }
         };
 
-       return ws.onclose = () => {
+        return ws.onclose = () => {
             console.log("Memory Connection closed");
         };
     }, [])
@@ -199,25 +196,29 @@ const ChartBoard = ({
             <ToggleSwitch SwitchLabel="Terminal" SwitchName="toggle-terminal" ToggleFunction={() => { ToggleTargetComponent(showTerminal, setShowTerminal) }} />
 
 
-            <div className={`grid grid-cols-4 col-span-2 gap-2`}>
+            <div className={`grid grid-cols-4 col-span-2 gap-y-5`}>
 
-                <>
-                    <div className="space-y-3">
-                        <button id="chart_1" className={`${showInsights ? "" : 'hidden'} w-full`} onClick={() => handleChartClick("CpuChart")}>
+
+                <div className="grid grid-cols-subgrid col-span-full lg:space-y-3">
+                    <div className="col-span-full flex flex-row justify-center gap-7 ">
+                        <button id="chart_1" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("CpuChart")}>
                             {cpuChart && <CpuChart chartMode="minimalist" data={dataCPU} />}
                         </button>
-                        <button id="chart_2" className={`${showInsights ? "" : 'hidden'} w-full`} onClick={() => handleChartClick("TransactionChart")}>
-                            {transferChart && <TransactionChart data={dataTransfer} chartMode="minimalist"/>}
+                        <button id="chart_2" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("TransactionChart")}>
+                            {transferChart && <TransactionChart data={dataTransfer} chartMode="minimalist" />}
                         </button>
-                        <button id="chart_3" className={`${showInsights ? "" : 'hidden'} w-full`} onClick={() => handleChartClick("MemoryChart")}>
+                        <button id="chart_3" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("MemoryChart")}>
                             {transferChart && <MemoryChart chartMode="minimalist" data={dataMemory} />}
                         </button>
                     </div>
+                </div>
 
-                    <div className={` bg-slate-500 col-span-3 ${showInsights || 'hidden'}`}>
+                <div className={`md:col-span-full ${showInsights || 'hidden'}`}>
+                    <div className="mx-auto w-[90%]">
                         {focusChartComponents[selectedChart]}
                     </div>
-                </>
+                </div>
+
 
                 {!showInsights &&
                     (<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className=" col-span-full justify-self-center w-32 h-32 stroke-slate-500">

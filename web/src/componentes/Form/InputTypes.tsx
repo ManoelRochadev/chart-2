@@ -6,12 +6,14 @@ interface TextInputProps {
     isDisable?: boolean;
     children?: React.ReactNode;
     value?: string;
+    onTextInput?: any
 }
 
 interface CheckboxInputProps {
     CheckboxName: string;
     isDisable?: boolean;
     children?: React.ReactNode;
+    onCheckboxClick?: any
 }
 
 interface SwitchInputProps {
@@ -30,6 +32,7 @@ interface RangeInputProps {
     RangeSteps?: number;
     isDisable?: boolean;
     children?: React.ReactNode;
+    onRangeInput?: any
 }
 
 export const TextInput = ({
@@ -37,7 +40,8 @@ export const TextInput = ({
     TextPlaceholder,
     isDisable,
     children,
-    value
+    value,
+    onTextInput
 }: TextInputProps) => {
     return (
         <div className="flex flex-col">
@@ -55,6 +59,7 @@ export const TextInput = ({
                 placeholder={TextPlaceholder}
                 disabled={isDisable}
                 defaultValue={value}
+                onInput={onTextInput}
             />
         </div>
     );
@@ -91,7 +96,7 @@ export const SwitchInput = ({
         <div className="w-full">
             <label
                 htmlFor={`switch-${SwitchName}`}
-                className="font-semibold align-middle text-sm md:text-lg"
+                className="font-semibold align-middle text-sm md:text-md "
             >
                 <input
                     type="checkbox"
@@ -118,8 +123,9 @@ export const RangeInput = ({
     RangeSteps = 1,
     isDisable,
     children,
+    onRangeInput
 }: RangeInputProps) => {
-    const [inputValue, setInputValue] = useState<string | number>(RangeMin);
+    const [inputValue, setInputValue] = useState<string | number>(RangeDefault);
     return (
         <div>
             <label
@@ -143,6 +149,9 @@ export const RangeInput = ({
                     }
                     onInput={(e: any) => {
                         setInputValue(`${e.target.value}`);
+                        if (onRangeInput) {
+                            onRangeInput()
+                        }
                     }}
                     disabled={isDisable}
                 />

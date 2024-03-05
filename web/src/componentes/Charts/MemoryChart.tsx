@@ -1,94 +1,17 @@
-import { useEffect, useState, useContext } from "react";
+//import { useEffect, useState, useContext } from "react";
 import { Chart } from "react-google-charts";
 import { chartModeList } from "./ChartFunctions"
-import { sharedData } from "./ChartContext";
+//import { sharedData } from "./ChartContext";
 import Loading from "./Loading"
 
 
 interface cpuChartProps {
-  chartMode: string,
-  onChartClick: (data: any) => void,
-  onChartLoad: any,
-  selectedChart?: boolean,
+  data: [number, number][];
+  chartMode: "default" | "minimalist"
 }
 
 
-const MemoryChart = ({ chartMode = "default", onChartClick, onChartLoad, selectedChart = false }: cpuChartProps) => {
-  const [data, setData] = useState<[number, number][]>([]);
-  const context = useContext(sharedData);
-
-  // estado para armazenar o maior valor de memória usado
-  const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
-
-  useEffect(() => {
-
-    // variável para armazenar o timestamp da última atualização
-    const timestamps: number[] = [];
-    // variável para armazenar a porcentagem de uso da CPU
-    const memoryUsage: number[] = [];
-
-    const ws = new WebSocket("ws://localhost:8081/memory");
-
-    ws.onopen = () => {
-      console.log(`conexão aberta em ${MemoryChart.name}`);
-      onChartLoad((prevInfo: WebSocket[]) => [...prevInfo, ws]);
-    }
-
-    ws.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-
-        timestamps.push(message[0]);
-        // transforma o valor de bytes para megabytes
-        memoryUsage.push(message[1] / 1024);
-        if (
-          timestamps.length > 1 &&
-          timestamps[timestamps.length - 1] ===
-          timestamps[timestamps.length - 2]
-        ) {
-          const media =
-            (memoryUsage[memoryUsage.length - 1] +
-              memoryUsage[memoryUsage.length - 2]) /
-            2;
-
-          setData((dadosAnteriores) => {
-            const novosDados = [...dadosAnteriores];
-            novosDados[novosDados.length - 1] = [message[0], media];
-
-            // verifica se o novo valor é maior que o maior valor de memória usado
-            if (media > maxMemoryUsage) {
-              setMaxMemoryUsage(media);
-            }
-            return novosDados;
-          });
-        } else {
-          // Se os timestamps forem diferentes, adiciona simplesmente o novo ponto de dados
-
-          setData((dadosAnteriores) => {
-            // verifica se o novo valor é maior que o maior valor de memória usado
-            if (message[1] > maxMemoryUsage) {
-              setMaxMemoryUsage(message[1]);
-            }
-            return [
-              ...dadosAnteriores,
-              [message[0], message[1] / 1024],
-            ];
-          });
-        }
-
-
-      } catch (error) {
-        console.error("Error parsing WebSocket message:", error);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log("Memory Connection closed");
-    };
-
-
-
-  }, []);
+const MemoryChart = ({ chartMode, data }: cpuChartProps) => {
 
   if (data.length === 0) {
     return (
@@ -96,25 +19,14 @@ const MemoryChart = ({ chartMode = "default", onChartClick, onChartLoad, selecte
     );
   }
 
-
   const chartData = [["Timestamp ", "Memory Usage"], ...data];
-
-  const chartOptions: any = chartModeList(chartMode);
-
-  chartOptions.title = "Memory Usage"
-
-
-  // if (context.selectedChart === MemoryChart.name) {
-  //   setContext({ selectedChart: MemoryChart.name, data: chartData, config: chartOptions })
-  // }
-
+  const chartOptions = chartModeList(chartMode, "Memory Usage");
 
   return (
     <div
-    id="Memory_chart"
-    className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
-    // onClick={() => setContext({ selectedChart: "CpuChart", data: chartData, config: chartOptions })}
->
+      id="Memory_chart"
+      className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
+    >
       <Chart
         chartType="LineChart"
         options={chartOptions}

@@ -44,7 +44,7 @@ export const TextInput = ({
     onTextInput
 }: TextInputProps) => {
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col col-span-full">
             <label
                 htmlFor={`switch-${TextName}`}
                 className="font-semibold text-sm"
@@ -93,7 +93,7 @@ export const SwitchInput = ({
     defaultChecked
 }: SwitchInputProps) => {
     return (
-        <div className="w-full">
+        <div className="col-span-full w-full">
             <label
                 htmlFor={`switch-${SwitchName}`}
                 className="font-semibold align-middle text-sm md:text-md "
@@ -127,7 +127,7 @@ export const RangeInput = ({
 }: RangeInputProps) => {
     const [inputValue, setInputValue] = useState<string | number>(RangeDefault);
     return (
-        <div>
+        <div className="col-span-full">
             <label
                 htmlFor={`switch-${RangeName}`}
                 className="flex items-center font-semibold align-middle text-xs"

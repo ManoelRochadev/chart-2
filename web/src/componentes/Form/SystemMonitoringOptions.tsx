@@ -1,18 +1,21 @@
 import { useState } from "react";
 import OptionsBoard from "./OptionsBoard";
 import { TextInput, SwitchInput, RangeInput } from "./InputTypes";
+import OptionHint from "./OptionHint";
 
 const SystemMonitoringOptions = ({ onEdited }: any) => {
     const [edited, setEdited] = useState<boolean>(false);
 
     return (
-        <OptionsBoard BoardHeader="System monitoring">
-            <div className="flex justify-around flex-wrap gap-2">
+        <OptionsBoard BoardHeader="System monitoring"  hintIcon={<OptionHint>hey!</OptionHint>}>
+            <div className="col-span-2 flex justify-around flex-wrap gap-2">
                 <SwitchInput SwitchName="systemMonitoring"
                     onSwitchCheck={() => { setEdited(true); onEdited(SystemMonitoringOptions.name) }}
                 >
                     System monitoring
                 </SwitchInput>
+            </div>
+            <div className="col-span-2 flex justify-around flex-wrap gap-2">
                 <SwitchInput SwitchName="stopSystemMonitoringEndBenchmark"
                     onSwitchCheck={() => { setEdited(true); onEdited(SystemMonitoringOptions.name) }}
                 >
@@ -32,7 +35,7 @@ const SystemMonitoringOptions = ({ onEdited }: any) => {
             >
                 Time interval
             </RangeInput>
-            <div className="flex justify-around flex-wrap gap-1">
+            <div className="col-span-full flex justify-around flex-wrap gap-1">
                 <SwitchInput SwitchName="overwriteSystemMonitoring"
                     onSwitchCheck={() => { setEdited(true); onEdited(SystemMonitoringOptions.name) }}
                 >

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import OptionsBoard from "./OptionsBoard";
 import { RangeInput } from "./InputTypes";
+import OptionHint from "./OptionHint";
 
 const FailureOptions = ({ onEdited }: any) => {
     const [edited, setEdited] = useState<boolean>(false);
 
     return (
-        <OptionsBoard BoardHeader="Failure simulation">
+        <OptionsBoard BoardHeader="Failure simulation"  hintIcon={<OptionHint>hey!</OptionHint>}>
             <RangeInput RangeName="restartDaleyTime" onRangeInput={() => { setEdited(true); onEdited(FailureOptions.name) }}>
                 Restart delay time
             </RangeInput>

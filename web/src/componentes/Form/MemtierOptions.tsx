@@ -1,13 +1,14 @@
 import { useState } from "react";
 import OptionsBoard from "./OptionsBoard";
 import { TextInput, SwitchInput, RangeInput } from "./InputTypes";
+import OptionHint from "./OptionHint";
 
 const MemtierOptions = ({ onEdited }: any) => {
     const [edited, setEdited] = useState<boolean>(false);
 
     return (
-        <OptionsBoard BoardHeader="Memtier Benchmark" >
-            <div className="flex justify-around">
+        <OptionsBoard BoardHeader="Memtier Benchmark"  hintIcon={<OptionHint>hey!</OptionHint>} >
+            <div className="col-span-full flex justify-around">
                 <SwitchInput SwitchName="memtierBenchmarkState" onSwitchCheck={() => { setEdited(true); onEdited(MemtierOptions.name) }} >
                     Memtier Benchmark
                 </SwitchInput>

@@ -1,13 +1,14 @@
 import { useState } from "react";
 import OptionsBoard from "./OptionsBoard";
 import { TextInput, SwitchInput } from "./InputTypes";
+import OptionHint from "./OptionHint";
 
 const ReportOptions = ({ onEdited }: any) => {
     const [edited, setEdited] = useState<boolean>(false);
 
     return (
-        <OptionsBoard BoardHeader="Report">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-5">
+        <OptionsBoard BoardHeader="Report"  hintIcon={<OptionHint>hey!</OptionHint>}>
+            <div className="col-span-full grid grid-cols-1 lg:grid-cols-2 gap-4 gap-y-5">
                 <div>
                     <div className="flex justify-around mb-3">
                         <SwitchInput SwitchName="generateRecoveryReport" onSwitchCheck={() => { setEdited(true); onEdited(ReportOptions.name) }}>

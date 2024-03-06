@@ -9,7 +9,7 @@ const IndexerOptions = ({ onEdited }: any) => {
     return (
         <OptionsBoard BoardHeader="Indexer" hintIcon={<OptionHint>hey!</OptionHint>}>
 
-            <div className="flex justify-around">
+            <div className="col-span-full flex justify-around">
                 <SwitchInput SwitchName="instantRecoveryState" onSwitchCheck={() => { setEdited(true); onEdited(IndexerOptions.name) }} defaultChecked>
                     Instant Recovery
                 </SwitchInput>

@@ -1,13 +1,14 @@
 import OptionsBoard from "./OptionsBoard";
 import { TextInput, SwitchInput, RangeInput } from "./InputTypes";
 import { useState } from "react";
+import OptionHint from "./OptionHint";
 
 const CheckpointerOptions = ({ onEdited }: any) => {
     const [edited, setEdited] = useState<boolean>(false);
 
     return (
-        <OptionsBoard BoardHeader="Checkpointer">
-            <div className="flex justify-around">
+        <OptionsBoard BoardHeader="Checkpointer" hintIcon={<OptionHint>hey!</OptionHint>}>
+            <div className="col-span-full flex justify-around">
                 <SwitchInput SwitchName="checkpointState" onSwitchCheck={() => { setEdited(true); onEdited(CheckpointerOptions.name) }}>
                     Checkpoint
                 </SwitchInput >

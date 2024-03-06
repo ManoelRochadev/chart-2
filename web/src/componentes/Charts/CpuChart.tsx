@@ -19,7 +19,7 @@ const CpuChart = ({ chartMode, data }: cpuChartProps) => {
     }
 
     const chartData = [["Timestamp", "CPU Usage"], ...data];
-    const chartOptions = chartModeList(chartMode, "CPU Usage");
+    const chartOptions = chartModeList(chartMode, "CPU");
 
     return (
 

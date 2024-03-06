@@ -5,13 +5,13 @@ import { chartModeList } from "./ChartFunctions"
 import Loading from "./Loading"
 
 
-interface cpuChartProps {
+interface latencyChartProps {
   data: [number, number][];
   chartMode: "default" | "minimalist"
 }
 
 
-const MemoryChart = ({ chartMode, data }: cpuChartProps) => {
+const MemoryChart = ({ chartMode, data }: latencyChartProps) => {
 
   if (data.length === 0) {
     return (
@@ -20,7 +20,7 @@ const MemoryChart = ({ chartMode, data }: cpuChartProps) => {
   }
 
   const chartData = [["Timestamp ", "Memory Usage"], ...data];
-  const chartOptions = chartModeList(chartMode, "Memory Usage");
+  const chartOptions = chartModeList(chartMode, "Memory");
 
   return (
     <div

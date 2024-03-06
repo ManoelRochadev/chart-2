@@ -17,14 +17,7 @@ const App = () => {
 
         setLoadingServer(!loadingServer);
 
-        const url = "start";
-
-        // const url: string =
-        //     params.includes("graph-cpu") && params.includes("graph-transf")
-        //         ? "teste_start"
-        //         : params.includes("graph-cpu")
-        //             ? "teste_cpu"
-        //             : "teste_data";
+        const url = "teste_start"
 
         const ws = new WebSocket(`ws://localhost:8081/${url}`);
 
@@ -50,8 +43,6 @@ const App = () => {
     };
 
     const onReloadButtuonClick = (e: Event, connectionsArray: WebSocket[]) => {
-        console.log(connectionsArray);
-
         connectionsArray.forEach((conection: WebSocket) => conection.close())
         startConnection?.close()
         setLogs([]);
@@ -61,10 +52,10 @@ const App = () => {
 
 
     return (
-        <div>
+        <div className="h-full">
             <NavBar />
 
-            <main>
+            <main className="h-full" >
 
                 {!generateArquive && !generateArquiveMonitoring && (
                     <SetupPanel initServer={initializeServer} />
@@ -78,7 +69,6 @@ const App = () => {
                             </p>
                         </div>
                     </div>
-
                 )}
 
                 {generateArquive && (
@@ -90,7 +80,7 @@ const App = () => {
                     />
                 )}
             </main>
-
+            <footer className="h-32"></footer>
         </div>
     );
 }

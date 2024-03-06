@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import CpuChart from "./CpuChart";
 import TransactionChart from "./TransferChart";
 import MemoryChart from "./MemoryChart";
-import FocusChart from "./FocusChart";
+import LatencyChart from "./LatencyChart";
 import TerminalController from "../TerminalController";
 import ToggleSwitch from "./ToggleSwitch";
 import ReloadButton from "../ReloadButton";
@@ -23,15 +23,17 @@ const ChartBoard = ({
     const [showInsights, setShowInsights] = useState<boolean>(true);
     const [showTerminal, setShowTerminal] = useState<boolean>(true);
 
-    const [selectedChart, setSelectedChart] = useState<"CpuChart" | "TransactionChart" | "MemoryChart">("CpuChart");
+    const [selectedChart, setSelectedChart] = useState<"CpuChart" | "TransactionChart" | "MemoryChart" | "LatencyChart">("CpuChart");
     const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
     const [dataCPU, setDataCPU] = useState<[number, number][]>([]);
     const [dataTransfer, setDataTransfer] = useState<[number, number][]>([]);
     const [dataMemory, setDataMemory] = useState<[number, number][]>([]);
+    const [dataLatency, setDataLatency] = useState<[number, number][]>([]);
 
     // variável para armazenar o timestamp da última atualização
     const timestampsCpu: number[] = [];
     const timestampsMemory: number[] = [];
+    const timestampsLatency: number[] = [];
 
     // estado para armazenar o maior valor de memória usado
     const [maxMemoryUsage, setMaxMemoryUsage] = useState(0);
@@ -39,11 +41,13 @@ const ChartBoard = ({
     // variável para armazenar a porcentagem de uso da CPU
     const cpuUsage: number[] = [];
     const memoryUsage: number[] = [];
+    const latency: number[] = [];
 
     const focusChartComponents = useMemo(() => ({
         "CpuChart": <CpuChart data={dataCPU} chartMode="default" />,
         "TransactionChart": <TransactionChart data={dataTransfer} chartMode="default" />,
-        "MemoryChart": <MemoryChart data={dataMemory} chartMode="default" />
+        "MemoryChart": <MemoryChart data={dataMemory} chartMode="default" />,
+        "LatencyChart": <LatencyChart data={dataLatency} chartMode="default" />,
     }), [dataCPU, dataTransfer, dataMemory]);
 
     useEffect(() => {
@@ -180,40 +184,93 @@ const ChartBoard = ({
     }, [])
 
 
+    useEffect(() => {
+        const ws = new WebSocket("ws://localhost:8081/latencia");
+
+        ws.onopen = () => {
+            console.log(`conexão aberta em ${LatencyChart.name}`);
+            setChartConnections((prevInfo: WebSocket[]) => [...prevInfo, ws]);
+        }
+
+        ws.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+
+                timestampsLatency.push(message[0]);
+
+                console.log(message);
+                
+                // latency.push(message[1]);
+                // if (
+                //     timestampsLatency.length > 1 &&
+                //     timestampsLatency[timestampsLatency.length - 1] ===
+                //     timestampsLatency[timestampsLatency.length - 2]
+                // ) {
+                //     const media =
+                //         (latency[latency.length - 1] +
+                //             latency[latency.length - 2]) /
+                //         2;
+
+                //     setDataLatency((dadosAnteriores) => {
+                //         const novosDados = [...dadosAnteriores];
+                //         novosDados[novosDados.length - 1] = [message[0], media];
+
+                //         return novosDados;
+                //     });
+                // } else {
+                //     setDataLatency((dadosAnteriores) => {
+                //         return [
+                //             ...dadosAnteriores,
+                //             [message[0], message[1] / 1024],
+                //         ];
+                //     });
+                // }
+
+
+            } catch (error) {
+                console.error("Error parsing WebSocket message:", error);
+            }
+        };
+
+        return ws.onclose = () => {
+            console.log("Latency Connection closed");
+        };
+    }, [])
+
+
 
     const ToggleTargetComponent = (targetValue: any, setTargetValue: any) => {
         setTargetValue(!targetValue)
     };
 
-    const handleChartClick = (chartName: "CpuChart" | "TransactionChart" | "MemoryChart") => {
+    const handleChartClick = (chartName: "CpuChart" | "TransactionChart" | "MemoryChart" | "LatencyChart") => {
         setSelectedChart(chartName);
     }
 
     return (
-        <div className="grid grid-cols-2 gap-y-5 w-[95%] mx-auto my-8 p-4 bg-slate-200 rounded">
+        <div className="grid grid-cols-2 gap-y-5 h-full mx-auto my-8 p-4 bg-slate-200 rounded">
 
             <ToggleSwitch SwitchLabel="Charts" SwitchName="toggle-scharts" ToggleFunction={() => { ToggleTargetComponent(showInsights, setShowInsights) }} />
             <ToggleSwitch SwitchLabel="Terminal" SwitchName="toggle-terminal" ToggleFunction={() => { ToggleTargetComponent(showTerminal, setShowTerminal) }} />
 
-
             <div className={`grid grid-cols-4 col-span-2 gap-y-5`}>
 
-
-                <div className="grid grid-cols-subgrid col-span-full lg:space-y-3">
-                    <div className="col-span-full flex flex-row justify-center gap-7 ">
-                        <button id="chart_1" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("CpuChart")}>
-                            {cpuChart && <CpuChart chartMode="minimalist" data={dataCPU} />}
-                        </button>
-                        <button id="chart_2" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("TransactionChart")}>
-                            {transferChart && <TransactionChart data={dataTransfer} chartMode="minimalist" />}
-                        </button>
-                        <button id="chart_3" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("MemoryChart")}>
-                            {transferChart && <MemoryChart chartMode="minimalist" data={dataMemory} />}
-                        </button>
-                    </div>
+                <div className="col-span-full flex flex-row justify-center gap-7 ">
+                    <button id="chart_1" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("CpuChart")}>
+                        {cpuChart && <CpuChart chartMode="minimalist" data={dataCPU} />}
+                    </button>
+                    <button id="chart_2" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("TransactionChart")}>
+                        {transferChart && <TransactionChart data={dataTransfer} chartMode="minimalist" />}
+                    </button>
+                    <button id="chart_3" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("MemoryChart")}>
+                        {transferChart && <MemoryChart chartMode="minimalist" data={dataMemory} />}
+                    </button>
+                    <button id="chart_4" className={`${showInsights ? "" : 'hidden'} `} onClick={() => handleChartClick("LatencyChart")}>
+                        {transferChart && <LatencyChart chartMode="minimalist" data={dataLatency} />}
+                    </button>
                 </div>
 
-                <div className={`md:col-span-full ${showInsights || 'hidden'}`}>
+                <div className={`md:col-span-full  ${showInsights || 'hidden'}`}>
                     <div className="mx-auto w-[90%]">
                         {focusChartComponents[selectedChart]}
                     </div>
@@ -227,8 +284,6 @@ const ChartBoard = ({
                 }
 
             </div>
-
-
 
             <div className="grid grid-cols-subgrid  col-span-2 w-4/5">
                 <div className={` justify-self-center col-span-2 w-4/5 ${showTerminal || 'hidden'}`}>

@@ -1,11 +1,17 @@
 import { GoogleChartOptions } from "react-google-charts"
 
-export const chartModeList = (mode = "default", title: string) => {
+export const chartModeList = (mode = "default", title: string, xAxisTitle = undefined, yAxisTitle = undefined) => {
     const modes: Record<string, GoogleChartOptions> = {
         default: {
             title,
             backgroundColor: "white",
-            legend: { position: 'bottom', textStyle: { color: 'blue', fontSize: 14 } }
+            legend: { position: 'bottom', textStyle: { color: 'blue', fontSize: 14 } },
+            hAxis: {
+                title: xAxisTitle
+            },
+            vAxis: {
+                title: yAxisTitle
+            },
         },
 
         minimalist: {
@@ -26,7 +32,7 @@ export const chartModeList = (mode = "default", title: string) => {
                 textPosition: 'none',
             },
             width: 160,
-            height:100,
+            height: 100,
             legend: "none",
             enableInteractivity: false,
         }

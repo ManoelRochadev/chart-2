@@ -5,7 +5,7 @@ import Loading from "./Loading"
 
 
 interface latencyChartProps {
-    data: [number, number][];
+    data: [number, number, number, string][];
     chartMode: "default" | "minimalist"
 }
 
@@ -18,7 +18,7 @@ const LatencyChart = ({ chartMode, data }: latencyChartProps) => {
         );
     }
 
-    const chartData = [["Timestamp ", "Restore latency"], ...data];
+    const chartData = [["Timestamp ", "Loaded previously", "Loaded previously", {type: 'string',role:'style'}], ...data];
     const chartOptions = chartModeList(chartMode, "Latency");
     chartOptions.pointSize = 3
     return (

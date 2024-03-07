@@ -25,10 +25,11 @@ const ChartBoard = ({
 
     const [selectedChart, setSelectedChart] = useState<"CpuChart" | "TransactionChart" | "MemoryChart" | "LatencyChart">("CpuChart");
     const [chartConnections, setChartConnections] = useState<WebSocket[]>([]);
+
     const [dataCPU, setDataCPU] = useState<[number, number][]>([]);
     const [dataTransfer, setDataTransfer] = useState<[number, number][]>([]);
     const [dataMemory, setDataMemory] = useState<[number, number][]>([]);
-    const [dataLatency, setDataLatency] = useState<[number, number][]>([]);
+    const [dataLatency, setDataLatency] = useState<[number, number, number, string][]>([]);
 
     // variável para armazenar o timestamp da última atualização
     const timestampsCpu: number[] = [];
@@ -41,14 +42,13 @@ const ChartBoard = ({
     // variável para armazenar a porcentagem de uso da CPU
     const cpuUsage: number[] = [];
     const memoryUsage: number[] = [];
-    const latency: number[] = [];
 
     const focusChartComponents = useMemo(() => ({
         "CpuChart": <CpuChart data={dataCPU} chartMode="default" />,
         "TransactionChart": <TransactionChart data={dataTransfer} chartMode="default" />,
         "MemoryChart": <MemoryChart data={dataMemory} chartMode="default" />,
         "LatencyChart": <LatencyChart data={dataLatency} chartMode="default" />,
-    }), [dataCPU, dataTransfer, dataMemory]);
+    }), [dataCPU, dataTransfer, dataMemory, dataLatency]);
 
     useEffect(() => {
         const ws = new WebSocket("ws://localhost:8081/cpu");
@@ -195,36 +195,33 @@ const ChartBoard = ({
         ws.onmessage = (event) => {
             try {
                 const message = JSON.parse(event.data);
-
-                timestampsLatency.push(message[0]);
-
-                console.log(message);
                 
-                // latency.push(message[1]);
-                // if (
-                //     timestampsLatency.length > 1 &&
-                //     timestampsLatency[timestampsLatency.length - 1] ===
-                //     timestampsLatency[timestampsLatency.length - 2]
-                // ) {
-                //     const media =
-                //         (latency[latency.length - 1] +
-                //             latency[latency.length - 2]) /
-                //         2;
+                const [type, data] = Object.entries<[number, number]>(message)[0]
 
-                //     setDataLatency((dadosAnteriores) => {
-                //         const novosDados = [...dadosAnteriores];
-                //         novosDados[novosDados.length - 1] = [message[0], media];
+                timestampsLatency.push(data[0])
 
-                //         return novosDados;
-                //     });
-                // } else {
-                //     setDataLatency((dadosAnteriores) => {
-                //         return [
-                //             ...dadosAnteriores,
-                //             [message[0], message[1] / 1024],
-                //         ];
-                //     });
-                // }
+                
+
+                if (
+                    timestampsLatency.length > 1
+                ) {
+                    const lastIndexLatency = timestampsLatency.length - 1;
+                    let xPrevious = 0
+                    let xOnDemand = 0
+                    let style = "";
+
+                    if (type == "1") {
+                        xPrevious = data[0]
+                        xOnDemand = 0
+                        style = "point {size: 7 , fill-color: #d3d300}"
+                    } else if (type == "2") {
+                        xPrevious = 0
+                        xOnDemand = data[0]
+                        style = "point {size: 7 , fill-color: #d300d3}"
+                    }
+
+                    setDataLatency((dadosAnteriores) => [...dadosAnteriores, [timestampsLatency[lastIndexLatency], xPrevious, xOnDemand, style]]);
+                }
 
 
             } catch (error) {

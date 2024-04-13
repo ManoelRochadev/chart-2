@@ -12,7 +12,6 @@ interface cpuChartProps {
 
 const CpuChart = ({ chartMode, data }: cpuChartProps) => {
 
-
     if (data.length === 0) {
         return (
             <Loading />
@@ -20,15 +19,13 @@ const CpuChart = ({ chartMode, data }: cpuChartProps) => {
     }
 
     const chartData = [["Timestamp", "CPU Usage"], ...data];
-
-    const chartOptions = chartModeList(chartMode, "CPU Usage");
+    const chartOptions = chartModeList(chartMode, "CPU");
 
     return (
 
         <div
             id="cpu_chart"
             className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
-           // onClick={() => context.selectedChart.set(CpuChart.name)}
         >
 
             <Chart

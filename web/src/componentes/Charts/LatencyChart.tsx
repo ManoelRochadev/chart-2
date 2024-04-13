@@ -1,16 +1,16 @@
 //import { useEffect, useState, useContext } from "react";
 import { Chart } from "react-google-charts";
 import { chartModeList } from "./ChartFunctions"
-//import { sharedData } from "./ChartContext";
 import Loading from "./Loading"
 
 
-interface cpuChartProps {
-    data: [number, number][];
+interface latencyChartProps {
+    data: [number, number, number, string][];
     chartMode: "default" | "minimalist"
 }
 
-const TransactionChart = ({ chartMode, data, }: cpuChartProps) => {
+
+const LatencyChart = ({ chartMode, data }: latencyChartProps) => {
 
     if (data.length === 0) {
         return (
@@ -18,29 +18,23 @@ const TransactionChart = ({ chartMode, data, }: cpuChartProps) => {
         );
     }
 
-    const chartData = [["Timestamp", "Transitions", { role: "style" }], ...data.map((item) => [
-        item[0],
-        item[1],
-        item[1] < 500
-            ? "point { size: 6; fill-color: #a52714; }"
-            : null,
-    ])]
-
-    const chartOptions = chartModeList(chartMode, "Transaction");
-
+    const chartData = [["Timestamp ", "Loaded previously", "Loaded previously", {type: 'string',role:'style'}], ...data];
+    const chartOptions = chartModeList(chartMode, "Latency");
+    chartOptions.pointSize = 3
     return (
         <div
-            id="Transaction_chart"
+            id="Latency_chart"
             className="mx-auto text-center pt-3 pb-1 bg-white rounded-lg  border-2 border-blue-700  "
         >
             <Chart
-                chartType="LineChart"
+                chartType="ScatterChart"
                 options={chartOptions}
                 data={chartData}
+                width="100%"
                 legendToggle
             />
         </div>
     );
 };
 
-export default TransactionChart;
+export default LatencyChart;

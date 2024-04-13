@@ -8,7 +8,7 @@ const TerminalController = ({ value }: TerminalData) => {
     return (
         <Terminal
             name="MM-DIRECT"
-            height="280px"
+            height="120px"
             colorMode={ColorMode.Dark}
         >
             {value.length > 0 &&

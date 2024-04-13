@@ -6,12 +6,14 @@ interface TextInputProps {
     isDisable?: boolean;
     children?: React.ReactNode;
     value?: string;
+    onTextInput?: any
 }
 
 interface CheckboxInputProps {
     CheckboxName: string;
     isDisable?: boolean;
     children?: React.ReactNode;
+    onCheckboxClick?: any
 }
 
 interface SwitchInputProps {
@@ -30,6 +32,7 @@ interface RangeInputProps {
     RangeSteps?: number;
     isDisable?: boolean;
     children?: React.ReactNode;
+    onRangeInput?: any
 }
 
 export const TextInput = ({
@@ -37,10 +40,11 @@ export const TextInput = ({
     TextPlaceholder,
     isDisable,
     children,
-    value
+    value,
+    onTextInput
 }: TextInputProps) => {
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col col-span-full">
             <label
                 htmlFor={`switch-${TextName}`}
                 className="font-semibold text-sm"
@@ -55,6 +59,7 @@ export const TextInput = ({
                 placeholder={TextPlaceholder}
                 disabled={isDisable}
                 defaultValue={value}
+                onInput={onTextInput}
             />
         </div>
     );
@@ -88,7 +93,7 @@ export const SwitchInput = ({
     defaultChecked
 }: SwitchInputProps) => {
     return (
-        <div className="w-full">
+        <div className="col-span-full w-full">
             <label
                 htmlFor={`switch-${SwitchName}`}
                 className="font-semibold align-middle text-sm md:text-md "
@@ -118,10 +123,11 @@ export const RangeInput = ({
     RangeSteps = 1,
     isDisable,
     children,
+    onRangeInput
 }: RangeInputProps) => {
-    const [inputValue, setInputValue] = useState<string | number>(RangeMin);
+    const [inputValue, setInputValue] = useState<string | number>(RangeDefault);
     return (
-        <div>
+        <div className="col-span-full">
             <label
                 htmlFor={`switch-${RangeName}`}
                 className="flex items-center font-semibold align-middle text-xs"
@@ -143,6 +149,9 @@ export const RangeInput = ({
                     }
                     onInput={(e: any) => {
                         setInputValue(`${e.target.value}`);
+                        if (onRangeInput) {
+                            onRangeInput()
+                        }
                     }}
                     disabled={isDisable}
                 />

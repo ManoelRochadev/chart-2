@@ -227,7 +227,7 @@ const processaMemoria = async (ws, pathMemoria) => {
       if (linha[0].match(/^\d+$/)) {
         const num = Math.floor((parseInt(linha[0]) - databaseStartupTime) / 1000000);
         x.push(num);
-        y.push(parseFloat(linha[2]));
+        y.push(parseFloat(linha[2].replace(',', '.')));
 
         ws.send(JSON.stringify([num, parseInt(lines[2])]));
       }
@@ -310,9 +310,9 @@ wss.on('connection', async (ws, req) => {
       if (lines[0].match(/^\d+$/)) {
         const num = Math.floor((endTime - databaseStartupCpu) / 1000000);
         x.push(num);
-        y.push(parseFloat(lines[1]));
+        y.push(parseFloat(lines[1].replace(',', '.')));
 
-        ws.send(JSON.stringify([num, parseFloat(lines[1])]));
+        ws.send(JSON.stringify([num, parseFloat(lines[1].replace(',', '.'))]));
       }
     });
 
